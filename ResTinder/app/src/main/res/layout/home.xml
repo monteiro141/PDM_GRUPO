@@ -58,7 +58,7 @@
             android:id="@+id/btn_back"
             android:layout_width="70dp"
             android:layout_height="wrap_content"
-            android:background="@drawable/arrow_nobg" />
+            android:background="@drawable/log_out" />
 
         <Space
             android:layout_width="wrap_content"

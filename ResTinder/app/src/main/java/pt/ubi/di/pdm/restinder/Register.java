@@ -18,7 +18,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Date;
 
-public class Register extends Activity
+public class Register extends Activity implements View.OnClickListener
 {
     private EditText emailRegister;
     private EditText passwordRegister;
@@ -59,7 +59,6 @@ public class Register extends Activity
         String gender = genderRegister.getText().toString().trim();
         String phone = cellphoneRegister.getText().toString().trim();
         String interestedIn = preferencesRegister.getText().toString().trim();
-        System.out.println(email + password + firstName + lastName + birthday + state + gender+ phone + interestedIn);
 
         if(!Patterns.EMAIL_ADDRESS.matcher(email).matches())
         {
@@ -123,6 +122,8 @@ public class Register extends Activity
                         if(task.isSuccessful())
                         {
                             User user = new User(email,firstName,lastName,birthday,state,gender,phone,interestedIn);
+                            System.out.println("Arroz");
+                            System.out.println(user);
                             FirebaseDatabase.getInstance().getReference("Users")
                                     .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                                     .setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -130,8 +131,7 @@ public class Register extends Activity
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if(task.isSuccessful())
                                     {
-                                        finish();
-                                        startActivity(new Intent(Register.this,MainActivity.class));
+                                        goToMainActivity();
                                         Toast.makeText(Register.this,"User has been registered!",Toast.LENGTH_LONG).show();
 
                                     }else
@@ -142,10 +142,25 @@ public class Register extends Activity
                             });
                         }else
                             {
-                                Toast.makeText(Register.this,"Failed to register! Try again!",Toast.LENGTH_LONG).show();
+                                Toast.makeText(Register.this,"Failed to register!",Toast.LENGTH_LONG).show();
                             }
                     }
                 });
     }
+
+    @Override
+    public void onClick(View view) {
+
+    }
+    @Override
+    public void onBackPressed() {
+        FirebaseAuth.getInstance().signOut();
+        goToMainActivity();
+    }
+    public void goToMainActivity(){
+        finish();
+        startActivity(new Intent(this,MainActivity.class));
+    }
+
 }
 

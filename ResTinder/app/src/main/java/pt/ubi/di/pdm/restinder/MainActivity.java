@@ -36,8 +36,8 @@ public class MainActivity extends Activity {
 
     }
     public void registerUser(View v){
+        super.finish();
         startActivity(new Intent(this,Register.class));
-        finish();
     }
     public void userLogin(View v) {
         String email = emailET.getText().toString().trim(); // editTextEmail.getText().toString().trim();
@@ -63,8 +63,8 @@ public class MainActivity extends Activity {
                 if(task.isSuccessful()) {
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     if(user.isEmailVerified()) {
-                        finish();
-                        startActivity(new Intent(MainActivity.this, Home.class));
+                        login();
+
                     }else{
                         user.sendEmailVerification();
                         Toast.makeText(MainActivity.this,"Check your email to verify your account!",Toast.LENGTH_LONG).show();
@@ -75,6 +75,15 @@ public class MainActivity extends Activity {
                 }
             }
         });
+
+    }
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
+    public void login(){
+        finish();
+        startActivity(new Intent(this, Home.class));
     }
 
 
