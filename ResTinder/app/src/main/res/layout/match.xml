@@ -8,15 +8,152 @@
     android:background="@drawable/back"
     android:orientation="vertical"
     android:weightSum="10"
-    tools:context=".Match">
+    tools:context=".MainActivity">
 
     <LinearLayout
         android:id="@+id/textView1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="9.18"
-        android:orientation="horizontal"
+        android:weightSum="10"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent" >
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="2.5" />
+
+        <TextView
+            android:id="@+id/textoMatched"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="sans-serif-black"
+            android:gravity="center|top"
+            android:text="MATCHED!"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display3"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="3" />
+
+        <TextView
+            android:id="@+id/nomeMatched"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="sans-serif-black"
+            android:text="NOME"
+            android:textAlignment="center"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textoMatched" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.25" />
+
+        <TextView
+            android:id="@+id/nomeMatchedPreenchido"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="sans-serif-black"
+            android:hint="NOME DA PESSOA"
+            android:textAlignment="center"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/nomeMatched" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/localizacaoMatched"
+            android:fontFamily="sans-serif-black"
+            android:layout_gravity="center"
+            android:text="LOCALIZAÇÃO"
+            android:textAlignment="center"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/nomeMatched" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.25" />
+
+        <TextView
+            android:id="@+id/localizacaoMatchedPreenchido"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="sans-serif-black"
+            android:hint="LOCALIZAÇÃO DA PESSOA"
+            android:textAlignment="center"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/localizacaoMatched" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/telemovelMatched"
+            android:fontFamily="sans-serif-black"
+            android:layout_gravity="center"
+            android:text="TELEMÓVEL"
+            android:textAlignment="center"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/localizacaoMatched" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.25" />
+
+        <TextView
+            android:id="@+id/telemovelMatchedPreenchido"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="sans-serif-black"
+            android:hint="TELEMOVEL DA PESSOA"
+            android:textAlignment="center"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/telemovelMatched" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.5" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/contactarMatched"
+            android:fontFamily="sans-serif-black"
+            android:layout_gravity="center"
+            android:text="CONTACTAR"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/telemovelMatched" />
     </LinearLayout>
 
     <LinearLayout
@@ -33,11 +170,23 @@
             android:layout_weight="1" />
 
         <ImageButton
+            android:id="@+id/button3"
+            android:layout_width="66dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="28dp"
+            android:background="@drawable/arrow_nobg" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <ImageButton
             android:id="@+id/home"
             android:onClick="goHOME"
             android:layout_width="70dp"
             android:layout_height="wrap_content"
-            android:background="@drawable/arrow_nobg" />
+            android:background="@drawable/home" />
 
         <Space
             android:layout_width="wrap_content"
@@ -48,17 +197,6 @@
             android:id="@+id/button"
             android:layout_width="66dp"
             android:layout_height="match_parent"
-            android:background="@drawable/home" />
-
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <ImageButton
-            android:id="@+id/button2"
-            android:layout_width="66dp"
-            android:layout_height="wrap_content"
             android:background="@drawable/heart_nobg" />
 
         <Space
@@ -67,7 +205,7 @@
             android:layout_weight="1" />
 
         <ImageButton
-            android:id="@+id/button3"
+            android:id="@+id/button2"
             android:layout_width="66dp"
             android:layout_height="wrap_content"
             android:background="@drawable/settings" />
