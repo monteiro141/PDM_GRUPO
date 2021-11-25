@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "993025375446",
+    "firebase_url": "https://choose4me-d4d09-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "choose4me-d4d09",
+    "storage_bucket": "choose4me-d4d09.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:993025375446:android:c1034fd244f38b3832dd77",
+        "android_client_info": {
+          "package_name": "pt.ubi.di.pdm.restinder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "993025375446-1i8roredfanrnse78pi5m0u4s50qp49t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7rq5FfwblRn55HsgWI68zdX2nHPs0UeY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "993025375446-1i8roredfanrnse78pi5m0u4s50qp49t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
