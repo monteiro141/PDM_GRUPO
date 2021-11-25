@@ -2,5 +2,7 @@ package pt.ubi.di.pdm.restinder;
 
 import android.app.Activity;
 
-public class Match extends Activity {
+public class Match extends Activity
+{
+
 }
