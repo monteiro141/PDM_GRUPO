@@ -1,7 +1,9 @@
 package pt.ubi.di.pdm.restinder;
 
 
-public class User
+import java.io.Serializable;
+
+public class User implements Serializable
 {
     String email,firstName, lastName,birthday, state,gender,phone,interestedIn;
     public User()

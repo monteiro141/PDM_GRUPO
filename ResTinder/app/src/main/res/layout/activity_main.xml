@@ -109,10 +109,11 @@
             android:layout_height="match_parent"
             android:background="@drawable/rounded"
             android:fontFamily="sans-serif-black"
-            android:text="Registar"
+            android:text="Register"
             android:textAlignment="center"
             android:textColor="@color/black"
-            android:textSize="25dp" />
+            android:textSize="25dp"
+            android:onClick="registerUser"/>
 
         <Space
             android:layout_width="wrap_content"

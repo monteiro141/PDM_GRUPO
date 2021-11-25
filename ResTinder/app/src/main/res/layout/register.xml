@@ -1,80 +1,272 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/back"
+    android:layout_height="wrap_content"
+    android:background="@drawable/login"
     android:orientation="vertical"
-    android:weightSum="10"
-    tools:context=".Register">
+    tools:context=".MainActivity">
 
-    <LinearLayout
-        android:id="@+id/textView1"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="9.18"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent" >
-    </LinearLayout>
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        android:gravity="center|bottom"
-        android:layout_weight="0.82"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <ImageButton
-            android:id="@+id/home"
-            android:onClick="goHOME"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/arrow_nobg" />
-
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <ImageButton
-            android:id="@+id/button"
-            android:layout_width="66dp"
+        <LinearLayout
+            android:id="@+id/textView1"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/home" />
+            android:orientation="vertical"
+            android:weightSum="200">
 
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="50" />
 
-        <ImageButton
-            android:id="@+id/button2"
-            android:layout_width="66dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/heart_nobg" />
+            <TextView
+                android:id="@+id/emailInstruction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="sans-serif-black"
+                android:text="Email"
+                android:textAlignment="center" />
 
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="5" />
 
-        <ImageButton
-            android:id="@+id/button3"
-            android:layout_width="66dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/settings" />
+            <EditText
+                android:id="@+id/emailRegister"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="Write your email here"
+                android:textAlignment="center" />
 
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-    </LinearLayout>
-</LinearLayout>
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="15" />
+
+            <TextView
+                android:id="@+id/passwordInstruction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="sans-serif-black"
+                android:text="Password"
+                android:textAlignment="center" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="5" />
+
+            <EditText
+                android:id="@+id/passwordRegister"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="Write your password here"
+                android:inputType="textPassword"
+                android:textAlignment="center" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="15" />
+
+            <TextView
+                android:id="@+id/firstNameInstruction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="sans-serif-black"
+                android:text="First Name"
+                android:textAlignment="center" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="5" />
+
+            <EditText
+                android:id="@+id/firstNameRegister"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="Write your first name here"
+                android:textAlignment="center" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="15" />
+
+            <TextView
+                android:id="@+id/lastNameInstruction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="sans-serif-black"
+                android:text="Last Name"
+                android:textAlignment="center" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="5" />
+
+            <EditText
+                android:id="@+id/lastNameRegister"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="Write your last name here"
+                android:textAlignment="center" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="15" />
+
+            <TextView
+                android:id="@+id/birthDateInstruction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="sans-serif-black"
+                android:text="Birth Date"
+                android:textAlignment="center" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="5" />
+
+            <EditText
+                android:id="@+id/birthDateRegister"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:inputType="date"
+                android:hint="Write your birth date here"
+                android:textAlignment="center" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="15" />
+
+            <TextView
+                android:id="@+id/civilStateInstruction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="sans-serif-black"
+                android:text="Civil State"
+                android:textAlignment="center" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="5" />
+
+            <EditText
+                android:id="@+id/civilStateRegister"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="Write your civil state here"
+                android:textAlignment="center" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="15" />
+
+            <TextView
+                android:id="@+id/genderInstruction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="sans-serif-black"
+                android:text="Gender"
+                android:textAlignment="center" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="5" />
+
+            <EditText
+                android:id="@+id/genderRegister"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="Write your gender here"
+                android:textAlignment="center" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="15" />
+
+            <TextView
+                android:id="@+id/cellphoneInstruction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="sans-serif-black"
+                android:text="Cellphone"
+                android:textAlignment="center" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="5" />
+
+            <EditText
+                android:id="@+id/cellphoneRegister"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:hint="Write your phone number here"
+                android:textAlignment="center" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="15" />
+
+            <TextView
+                android:id="@+id/preferencesInstruction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="sans-serif-black"
+                android:text="Preferences"
+                android:textAlignment="center" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="5" />
+
+            <EditText
+                android:id="@+id/preferencesRegister"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="Write your preferences here"
+                android:textAlignment="center" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="50" />
+
+            <Button
+                android:id="@+id/buttonRegister"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Register"
+                android:onClick="registerUser"/>
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

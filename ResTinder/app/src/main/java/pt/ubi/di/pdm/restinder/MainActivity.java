@@ -35,7 +35,10 @@ public class MainActivity extends Activity {
         passwordET = findViewById(R.id.passwordFieldID);
 
     }
-
+    public void registerUser(View v){
+        startActivity(new Intent(this,Register.class));
+        finish();
+    }
     public void userLogin(View v) {
         String email = emailET.getText().toString().trim(); // editTextEmail.getText().toString().trim();
         String password = passwordET.getText().toString().trim();;
@@ -60,6 +63,7 @@ public class MainActivity extends Activity {
                 if(task.isSuccessful()) {
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     if(user.isEmailVerified()) {
+                        finish();
                         startActivity(new Intent(MainActivity.this, Home.class));
                     }else{
                         user.sendEmailVerification();
