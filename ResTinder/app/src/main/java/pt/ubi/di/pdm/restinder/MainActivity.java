@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -21,35 +23,35 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends Activity {
 
+    private EditText emailET;
+    private EditText passwordET;
     private FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mAuth = FirebaseAuth.getInstance();
-
-
+        emailET = findViewById(R.id.emailFieldID);
+        passwordET = findViewById(R.id.passwordFieldID);
 
     }
 
-    private void userLogin() {
-        String email = "test@email.com"; // editTextEmail.getText().toString().trim();
-        String password = "test123456";
+    public void userLogin(View v) {
+        String email = emailET.getText().toString().trim(); // editTextEmail.getText().toString().trim();
+        String password = passwordET.getText().toString().trim();;
         if(!Patterns.EMAIL_ADDRESS.matcher(email).matches() || email.isEmpty()) {
-            System.out.println("Invalid email");
-            /*
-             * editTextEmail.setError("Invalid email!");
-             * editTextEmail.requestFocus();
-             * return;
-             * */
+            //System.out.println("Invalid email");
+            emailET.setError("Invalid email!");
+            emailET.requestFocus();
+            return;
+
         }
         if(password.isEmpty()) {
-            System.out.println("Password is empty");
-            /*
-             * editTextPassword.setError("Password is empty!");
-             * editTextPassword.requestFocus();
-             * return;
-             * */
+            //System.out.println("Password is empty");
+            passwordET.setError("Password is empty!");
+            passwordET.requestFocus();
+            return;
+
         }
 
         mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {

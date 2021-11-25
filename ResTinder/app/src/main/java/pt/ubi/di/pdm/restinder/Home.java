@@ -64,7 +64,7 @@ public class Home extends Activity
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(Home.this,"Failed to login!",Toast.LENGTH_LONG).show();
+                Toast.makeText(Home.this,"Failed to get user data!",Toast.LENGTH_LONG).show();
             }
         });
     }
