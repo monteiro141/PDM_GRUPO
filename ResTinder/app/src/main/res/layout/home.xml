@@ -56,7 +56,6 @@
 
         <ImageButton
             android:id="@+id/btn_back"
-            android:onClick="goHOME"
             android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:background="@drawable/arrow_nobg" />
