@@ -1,10 +1,16 @@
 package pt.ubi.di.pdm.restinder;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -25,6 +32,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -42,8 +53,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class Home extends Activity
-{
+public class Home extends Activity implements LocationListener{
     private ImageButton logout;
     private FirebaseAuth mAuth;
     private FirebaseUser user;
@@ -52,28 +62,32 @@ public class Home extends Activity
     private ArrayList<Restaurants> restaurantsList;
     private ImageView restaurantView;
     private TextView nameRestaurantDisplay;
+    private double currentLat = 0.0, currentLong = 0.0;
+    private double radius = 5000;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home);
-        restaurantsList=new ArrayList<>();
+        restaurantsList = new ArrayList<>();
 
-        restaurantView=findViewById(R.id.image_restaurant);
-        nameRestaurantDisplay=findViewById(R.id.Restaurant_NameID);
+        restaurantView = findViewById(R.id.image_restaurant);
+        nameRestaurantDisplay = findViewById(R.id.Restaurant_NameID);
+
 
         mAuth = FirebaseAuth.getInstance();
         logout = (ImageButton) findViewById(R.id.btn_back);
 
-        logout.setOnClickListener(new View.OnClickListener(){
+        logout.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 FirebaseAuth.getInstance().signOut();
                 goToMainActivity();
             }
         });
         user = FirebaseAuth.getInstance().getCurrentUser();
         reference = FirebaseDatabase.getInstance().getReference("Users");
-        userID= user.getUid();
+        userID = user.getUid();
 
         reference.child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -82,7 +96,7 @@ public class Home extends Activity
              */
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User userProfile = dataSnapshot.getValue(User.class);
-                if(userProfile != null){
+                if (userProfile != null) {
                     String email = userProfile.email;
                     String firstName = userProfile.firstName;
                     String lastName = userProfile.lastName;
@@ -96,62 +110,72 @@ public class Home extends Activity
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(Home.this,"Failed to get user data!",Toast.LENGTH_LONG).show();
+                Toast.makeText(Home.this, "Failed to get user data!", Toast.LENGTH_LONG).show();
             }
         });
 
-        RequestQueue queue= Volley.newRequestQueue(this);
-        /*String url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?"+
-                "location=41.44264850991976,-8.303307518099446"+
-                "&radius=500" +
-                "&type=restaurant"+
-                "&key=" + getResources().getString(R.string.googlePlacesKey);*/
 
-        String url ="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=40.271673892292775,-7.500621264363033&radius=5000&type=restaurant&key=AIzaSyCkPy2xKkFKwz4wr49yUXU9v66Bb7J38-Y";
-        JsonObjectRequest data = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        JSONArray jsonArray = null;
-                        try {
-                            jsonArray = response.getJSONArray("results");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        for (int i = 0; i < jsonArray.length(); i++) {
+        //Get the current location of the user. First we need to verify if the permission is granted.
+        if(ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            LocationManager locationManager= (LocationManager)getSystemService(LOCATION_SERVICE);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,this);
+            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            currentLat=location.getLatitude();
+            currentLong=location.getLongitude();
+        }
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+             String url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?"+
+                    "location="+ currentLat+","+currentLong +
+                    "&radius=" + radius +
+                    "&type=restaurant"+
+                    "&sensor=true"+
+                    "&key=" + getResources().getString(R.string.googlePlacesKey);
+             JsonObjectRequest data = new JsonObjectRequest(Request.Method.GET, url, null,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            JSONArray jsonArray = null;
                             try {
-                                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                                //System.out.println(jsonObject.getString("name"));
-                                addRestaurant(jsonObject);
+                                jsonArray = response.getJSONArray("results");
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                        }
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                try {
+                                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                                    addRestaurant(jsonObject);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
 
-                        if(restaurantsList.size()==0){
-                            restaurantView.setBackgroundResource(R.drawable.no_restaurants);
-                        }else{
-                            String url2="https://maps.googleapis.com/maps/api/place/photo" +
+                            if(restaurantsList.size()==0){
+                                restaurantView.setBackgroundResource(R.drawable.no_restaurants);
+                            }else{
+                                String url2="https://maps.googleapis.com/maps/api/place/photo" +
                                         "?maxwidth=800" +
                                         "&photo_reference=" +restaurantsList.get(0).getImgURl() +
                                         "&key=" + getResources().getString(R.string.googlePlacesKey);
-                            Picasso.get().load(url2).into(restaurantView);
-                            nameRestaurantDisplay.setText(restaurantsList.get(0).getName());
+                                Picasso.get().load(url2).into(restaurantView);
+                                nameRestaurantDisplay.setText(restaurantsList.get(0).getName());
+                            }
+
+
+
                         }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("Json", "Impossível ler");
+                }
 
+            });
 
+            queue.add(data);
+        }
 
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("Json", "Impossível ler");
-            }
-
-        });
-
-        queue.add(data);
-    }
     @Override
     public void onBackPressed() {
         FirebaseAuth.getInstance().signOut();
@@ -175,4 +199,10 @@ public class Home extends Activity
     }
 
 
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+        currentLong = location.getLongitude();
+        currentLat = location.getLatitude();
+
+    }
 }
