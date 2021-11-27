@@ -45,7 +45,7 @@ public class MainActivity extends Activity {
     private CheckBox saveLoginBox;
     private Boolean saveLogin;
     User userProfile;
-
+    //Permissions api
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
