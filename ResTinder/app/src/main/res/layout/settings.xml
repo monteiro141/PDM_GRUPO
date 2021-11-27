@@ -1,190 +1,232 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/back">
+    android:layout_height="match_parent"
+    android:weightSum="10"
+    android:orientation="vertical"
+    android:background="@drawable/back"
+    tools:context=".MainActivity">
 
-    <ScrollView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="9.17"
+        android:orientation="vertical"
+        app:layout_constraintBottomtoBottomOf="parent">
 
-        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
+        <TextView
+            android:id="@+id/settings"
             android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginStart="100dp"
+            android:layout_marginEnd="100dp"
+            android:gravity="center"
+            android:text="Settings"
+            android:layout_weight="1"
+            android:textColor="#051745"
+            android:textSize="32sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.056" />
+
+        <TextView
+            android:id="@+id/titlenome"
+            android:layout_width="wrap_content"
+            android:layout_height="65dp"
+            android:fontFamily="sans-serif-black"
+            android:text="First Name"
+            android:layout_marginLeft="20dp"
+            android:layout_weight="1"
+            android:textColor="@color/black"
+            android:textSize="24sp" />
+
+        <EditText
+            android:id="@+id/textnome"
+            android:layout_width="120dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="2dp"
+            android:inputType="textPersonName" />
+
+        <TextView
+            android:id="@+id/titleapelido"
+            android:layout_width="wrap_content"
+            android:layout_height="65dp"
+            android:fontFamily="sans-serif-black"
+            android:text="Last Name"
+            android:layout_weight="1"
+            android:layout_marginLeft="20dp"
+            android:textColor="@color/black"
+            android:textSize="24sp" />
+
+        <EditText
+            android:id="@+id/textapelido"
+            android:layout_width="120dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:inputType="textPersonName" />
+
+        <TextView
+            android:id="@+id/titlemailparceiro"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-black"
+            android:text="Partner Mail"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/black"
+            android:textSize="24sp" />
+
+        <EditText
+            android:id="@+id/textmailparceiro"
+            android:layout_width="250dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:inputType="textPersonName" />
+
+        <TextView
+            android:id="@+id/titletelemovel"
+            android:layout_width="wrap_content"
+            android:layout_height="65dp"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-black"
+            android:text="Phone Number"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/black"
+            android:textSize="24sp" />
+
+        <EditText
+            android:id="@+id/texttelemovel"
+            android:layout_width="230dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:inputType="number" />
+
+        <TextView
+            android:id="@+id/titleradius"
+            android:layout_width="wrap_content"
+            android:layout_height="65dp"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-black"
+            android:text="Range (km)"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/black"
+            android:textSize="24sp" />
+
+        <EditText
+            android:id="@+id/textradius"
+            android:layout_width="70dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:inputType="number" />
+
+        <TextView
+            android:id="@+id/birthday"
+            android:layout_width="wrap_content"
+            android:layout_height="70dp"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-black"
+            android:layout_marginLeft="20dp"
+            android:text="Age"
+            android:textColor="@color/black"
+            android:textSize="24sp" />
+
+        <EditText
+            android:id="@+id/pickDate"
+            android:layout_width="70dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="20dp"
+            android:inputType="number"
+            android:layout_marginTop="2dp"
+            android:fontFamily="sans-serif-black"
+            android:textColor="@color/black" />
+
+        <Button
+            android:id="@+id/confirmChanges"
+            android:layout_width="wrap_content"
+            android:layout_height="75dp"
+            android:layout_gravity="center"
+            android:fontFamily="sans-serif-black"
+            android:text="Confirm Changes"
+            android:layout_weight="1"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/black" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:layout_gravity="center|bottom"
+        android:layout_weight="0.83"
+        app:layout_constraintBottomtoBottomOf="parent">
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/buttonback"
+            android:layout_width="60dp"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            tools:context=".MainActivity">
+            android:background="@drawable/arrow_nobg" />
 
-            <TextView
-                android:id="@+id/settings"
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:layout_marginStart="100dp"
-                android:layout_marginEnd="100dp"
-                android:gravity="center"
-                android:text="Settings"
-                android:textColor="#051745"
-                android:textSize="32sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintVertical_bias="0.056" />
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
+        <Button
+            android:id="@+id/buttonhome"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/buttonback"
+            android:background="@drawable/home" />
 
-            //primeiro nome
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
-            <TextView
-                android:id="@+id/titlenome"
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:layout_alignLeft="@id/textnome"
-                android:layout_alignTop="@id/textnome"
-                android:layout_marginTop="-30dp"
-                android:text="Primeiro Nome"
-                android:textColor="@color/black"
-                android:fontFamily="sans-serif-black"
-                android:textSize="24sp" />
+        <Button
+            android:id="@+id/buttonhearth"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/buttonhome"
+            android:background="@drawable/heart_nobg"
+            android:layout_alignParentBottom="true"/>
 
-            <EditText
-                android:id="@+id/textnome"
-                android:layout_width="120dp"
-                android:layout_height="40dp"
-                android:layout_alignTop="@+id/settings"
-                android:layout_alignParentStart="true"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="120dp"
-                android:inputType="textPersonName" />
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
-            //ultimo nome
-            <TextView
-                android:id="@+id/titleapelido"
-                android:layout_width="wrap_content"
-                android:text="Último Nome"
-                android:layout_alignLeft="@id/textapelido"
-                android:layout_alignTop="@id/textapelido"
-                android:layout_marginTop="-30dp"
-                android:textSize="24sp"
-                android:textColor="@color/black"
-                android:fontFamily="sans-serif-black"
-                android:layout_height="30dp" />
+        <Button
+            android:id="@+id/buttonsettings"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/buttonhearth"
+            android:background="@drawable/settings" />
 
-            <EditText
-                android:id="@+id/textapelido"
-                android:layout_width="120dp"
-                android:layout_height="40dp"
-                android:layout_alignTop="@+id/textnome"
-                android:layout_alignParentStart="true"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="100dp"
-                android:inputType="textPersonName" />
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+    </LinearLayout>
 
-            //foto de Perfil
-            //??
-
-
-            //mail do parceiro
-
-            <TextView
-                android:id="@+id/titlemailparceiro"
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:layout_alignLeft="@id/textmailparceiro"
-                android:layout_alignTop="@id/textmailparceiro"
-                android:layout_marginTop="-30dp"
-                android:fontFamily="sans-serif-black"
-                android:text="Endereço eletrónico do teu parceiro"
-                android:textColor="@color/black"
-                android:textSize="24sp" />
-
-            <EditText
-                android:id="@+id/textmailparceiro"
-                android:layout_width="250dp"
-                android:layout_height="40dp"
-                android:layout_alignTop="@+id/textapelido"
-                android:layout_alignParentStart="true"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="100dp"
-                android:inputType="textPersonName" />
-
-            //mudar nmro telemovel
-
-            <TextView
-                android:id="@+id/titletelemovel"
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:layout_alignLeft="@id/texttelemovel"
-                android:layout_alignTop="@id/texttelemovel"
-                android:layout_marginTop="-30dp"
-                android:text="Número de Telemóvel"
-                android:textColor="@color/black"
-                android:fontFamily="sans-serif-black"
-                android:textSize="24sp" />
-
-            <EditText
-                android:id="@+id/texttelemovel"
-                android:layout_width="230dp"
-                android:layout_height="40dp"
-                android:layout_alignTop="@+id/textmailparceiro"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="100dp"
-                android:inputType="number" />
-
-            //raio
-
-            <TextView
-                android:id="@+id/titleradius"
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:layout_alignLeft="@id/textradius"
-                android:layout_alignTop="@id/textradius"
-                android:layout_marginTop="-30dp"
-                android:text="Raio (km)"
-                android:textColor="@color/black"
-                android:fontFamily="sans-serif-black"
-                android:textSize="24sp" />
-
-            <EditText
-                android:id="@+id/textradius"
-                android:layout_width="70dp"
-                android:layout_height="40dp"
-                android:layout_alignTop="@+id/texttelemovel"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="100dp"
-                android:inputType="number" />
-
-        </RelativeLayout>
-    </ScrollView>
-
-    <ImageButton
-        android:id="@+id/buttonback"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="30dp"
-        android:background="@drawable/arrow_nobg"
-        android:layout_alignParentBottom="true"/>
-
-    <ImageButton
-        android:id="@+id/buttonhome"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_toRightOf="@id/buttonback"
-        android:layout_marginLeft="30dp"
-        android:background="@drawable/home"
-        android:layout_alignParentBottom="true"/>
-    <ImageButton
-        android:id="@+id/buttonhearth"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_toRightOf="@id/buttonhome"
-        android:layout_marginLeft="30dp"
-        android:background="@drawable/heart_nobg"
-        android:layout_alignParentBottom="true"/>
-    <ImageButton
-        android:id="@+id/buttonsettings"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_toRightOf="@id/buttonhearth"
-        android:layout_marginLeft="30dp"
-        android:background="@drawable/settings"
-        android:layout_alignParentBottom="true"/>
-</RelativeLayout>
+</LinearLayout>
