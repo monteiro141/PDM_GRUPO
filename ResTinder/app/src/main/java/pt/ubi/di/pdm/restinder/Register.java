@@ -86,7 +86,13 @@ public class Register extends Activity implements View.OnClickListener
         }
         if(birthday.isEmpty())
         {
-            firstNameRegister.setError("Birthday is empty!");
+            firstNameRegister.setError("Birthday is wrong!");
+            firstNameRegister.requestFocus();
+            return;
+        }
+        if(Integer.parseInt(birthday)<=18)
+        {
+            firstNameRegister.setError("Needs to be 18 or older!");
             firstNameRegister.requestFocus();
             return;
         }
@@ -122,8 +128,8 @@ public class Register extends Activity implements View.OnClickListener
                         if(task.isSuccessful())
                         {
                             User user = new User(email,firstName,lastName,birthday,state,gender,phone,interestedIn);
-                            System.out.println("Arroz");
-                            System.out.println(user);
+                            /*System.out.println("Arroz");
+                            System.out.println(user);*/
                             FirebaseDatabase.getInstance().getReference("Users")
                                     .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                                     .setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {

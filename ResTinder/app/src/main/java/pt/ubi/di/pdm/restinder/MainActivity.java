@@ -25,6 +25,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 //Firebase imports
 
 
@@ -32,10 +37,14 @@ public class MainActivity extends Activity {
     private EditText emailET;
     private EditText passwordET;
     private FirebaseAuth mAuth;
+    private FirebaseUser user;
+    private DatabaseReference reference;
+    private String userID;
     private SharedPreferences loginPF;
     private SharedPreferences.Editor loginEditor;
     private CheckBox saveLoginBox;
     private Boolean saveLogin;
+    User userProfile;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -54,7 +63,7 @@ public class MainActivity extends Activity {
         //initialize boolean value to false and set it under "loginPrefs"
         saveLogin = loginPF.getBoolean("loginState",false);
 
-        if(saveLogin == true){
+        if(saveLogin){
             emailET.setText(loginPF.getString("username",""));
             passwordET.setText(loginPF.getString("password",""));
             saveLoginBox.setChecked(true);
@@ -132,8 +141,38 @@ public class MainActivity extends Activity {
         finish();
     }
     public void login(){
-        finish();
-        startActivity(new Intent(this, Home.class));
-    }
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        reference = FirebaseDatabase.getInstance().getReference("Users");
+        userID = user.getUid();
 
+        reference.child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            /**
+             * Vai buscar os dados no realtime database do user que inicou sessão
+             */
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                userProfile = dataSnapshot.getValue(User.class);
+                System.out.println(userProfile.toString());
+                if (userProfile != null) {
+                    checkFirstLogIn();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(MainActivity.this, "Failed to get user data!", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+    public void checkFirstLogIn()
+    {
+        if(userProfile.firstLogIn.equals("yes"))
+        {
+            super.finish();
+            startActivity(new Intent(this, Settings.class));
+        }else{
+            super.finish();
+            startActivity(new Intent(this, Home.class));
+        }
+    }
 }

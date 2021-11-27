@@ -64,7 +64,7 @@ public class Home extends Activity implements LocationListener{
     private TextView nameRestaurantDisplay;
     private double currentLat = 0.0, currentLong = 0.0;
     private double radius = 5000;
-
+    User userProfile;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,17 +95,7 @@ public class Home extends Activity implements LocationListener{
              * Vai buscar os dados no realtime database do user que inicou sessão
              */
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User userProfile = dataSnapshot.getValue(User.class);
-                if (userProfile != null) {
-                    String email = userProfile.email;
-                    String firstName = userProfile.firstName;
-                    String lastName = userProfile.lastName;
-                    String birthday = userProfile.birthday;
-                    String state = userProfile.state;
-                    String gender = userProfile.gender;
-                    String phone = userProfile.phone;
-                    String interestedIn = userProfile.interestedIn;
-                }
+                userProfile = dataSnapshot.getValue(User.class);
             }
 
             @Override

@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 public class User implements Serializable
 {
-    public String email,firstName, lastName,birthday, state,gender,phone,interestedIn;
+    public String email,firstName, lastName,birthday, state,gender,phone,interestedIn,firstLogIn;
     public User()
     {
 
@@ -20,5 +20,6 @@ public class User implements Serializable
         this.gender = Gender;
         this.phone = Phone;
         this.interestedIn = InterestedIn;
+        firstLogIn = "true";
     }
 }
