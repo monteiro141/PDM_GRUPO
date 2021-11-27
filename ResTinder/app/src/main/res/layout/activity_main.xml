@@ -71,6 +71,20 @@
                 android:textColor="@color/black"
                 android:textSize="25dp"/>
 
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <CheckBox
+                android:id="@+id/saveLoginBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Save Credentials?"
+                android:textSize="25dp"
+                android:textColor="@color/black"/>
+
         </LinearLayout>
 
     </LinearLayout>

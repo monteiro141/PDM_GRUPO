@@ -8,6 +8,7 @@ import androidx.core.app.ActivityCompat;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -15,6 +16,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -27,10 +29,14 @@ import com.google.firebase.auth.FirebaseUser;
 
 
 public class MainActivity extends Activity {
-
     private EditText emailET;
     private EditText passwordET;
     private FirebaseAuth mAuth;
+    private SharedPreferences loginPF;
+    private SharedPreferences.Editor loginEditor;
+    private CheckBox saveLoginBox;
+    private Boolean saveLogin;
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +45,21 @@ public class MainActivity extends Activity {
         mAuth = FirebaseAuth.getInstance();
         emailET = findViewById(R.id.emailFieldID);
         passwordET = findViewById(R.id.passwordFieldID);
+        saveLoginBox = findViewById(R.id.saveLoginBox);
+
+        //object of sharedPreferences to save the values on login
+        loginPF = getSharedPreferences("loginPrefs",MODE_PRIVATE);
+        loginEditor = loginPF.edit();
+
+        //initialize boolean value to false and set it under "loginPrefs"
+        saveLogin = loginPF.getBoolean("loginState",false);
+
+        if(saveLogin == true){
+            emailET.setText(loginPF.getString("username",""));
+            passwordET.setText(loginPF.getString("password",""));
+            saveLoginBox.setChecked(true);
+        }
+
         if(ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(this,Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED){
@@ -55,6 +76,7 @@ public class MainActivity extends Activity {
     public void userLogin(View v) {
         String email = emailET.getText().toString().trim(); // editTextEmail.getText().toString().trim();
         String password = passwordET.getText().toString().trim();;
+
         if(!Patterns.EMAIL_ADDRESS.matcher(email).matches() || email.isEmpty()) {
             //System.out.println("Invalid email");
             emailET.setError("Invalid email!");
@@ -67,7 +89,6 @@ public class MainActivity extends Activity {
             passwordET.setError("Password is empty!");
             passwordET.requestFocus();
             return;
-
         }
 
         mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -76,6 +97,21 @@ public class MainActivity extends Activity {
                 if(task.isSuccessful()) {
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     if(user.isEmailVerified()) {
+
+                        //save credentials of login => if checkbox is checked
+                        if(saveLoginBox.isChecked()){
+                            loginEditor.putBoolean("loginState",true);
+                            loginEditor.putString("username",emailET.getText().toString());
+                            loginEditor.putString("password",passwordET.getText().toString());
+                            loginEditor.commit();
+                        }
+
+                        else{
+                            loginEditor.clear();
+                            loginEditor.commit();
+                        }
+
+                        //user login
                         login();
 
                     }else{
@@ -90,6 +126,7 @@ public class MainActivity extends Activity {
         });
 
     }
+
     @Override
     public void onBackPressed() {
         finish();
@@ -98,7 +135,5 @@ public class MainActivity extends Activity {
         finish();
         startActivity(new Intent(this, Home.class));
     }
-
-
 
 }
