@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/back"
+    android:gravity="center"
     android:orientation="vertical"
     android:weightSum="10"
     tools:context=".Match">
 
+
     <LinearLayout
+        android:id="@+id/home_restaurant"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="9.18"
@@ -25,12 +27,29 @@
             android:layout_weight="0.3"
             android:background="@drawable/reject" />
 
-        <ImageView
-            android:id="@+id/image_restaurant"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_weight="2.3"
-            android:src="@drawable/no_restaurants"/>
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/Restaurant_NameID"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text=""
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/black"
+                android:textSize="22dp"/>
+
+            <ImageView
+                android:id="@+id/image_restaurant"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                 />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/text_acept"
@@ -44,9 +63,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:orientation="horizontal"
-        android:gravity="center|bottom"
         android:layout_weight="0.82"
+        android:gravity="center|bottom"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <Space
