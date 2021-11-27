@@ -1,11 +1,15 @@
 package pt.ubi.di.pdm.restinder;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
@@ -26,6 +30,7 @@ public class MainActivity extends Activity {
     private EditText emailET;
     private EditText passwordET;
     private FirebaseAuth mAuth;
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +38,13 @@ public class MainActivity extends Activity {
         mAuth = FirebaseAuth.getInstance();
         emailET = findViewById(R.id.emailFieldID);
         passwordET = findViewById(R.id.passwordFieldID);
+        if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                checkSelfPermission(Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED){
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
+            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},1);
+            requestPermissions(new String[]{Manifest.permission.INTERNET},1);
+        }
 
     }
     public void registerUser(View v){
