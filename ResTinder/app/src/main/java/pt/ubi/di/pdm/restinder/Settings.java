@@ -52,16 +52,6 @@ public class Settings extends Activity
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 userProfile = dataSnapshot.getValue(User.class);
                 if (userProfile != null) {
-                    String email = userProfile.email;
-                    String firstName = userProfile.firstName;
-                    String lastName = userProfile.lastName;
-                    String birthday = userProfile.birthday;
-                    String state = userProfile.state;
-                    String gender = userProfile.gender;
-                    String phone = userProfile.phone;
-                    String interestedIn = userProfile.interestedIn;
-                    String firstlogin = userProfile.firstLogIn;
-
                     textnome.setText(userProfile.firstName);
                     textapelido.setText(userProfile.lastName);
                     texttelemovel.setText(userProfile.phone);
