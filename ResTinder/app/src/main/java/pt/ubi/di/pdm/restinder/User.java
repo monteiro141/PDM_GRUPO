@@ -8,6 +8,7 @@ public class User implements Serializable
     public String email,firstName, lastName, state,gender,interestedIn;
     public Integer birthday;
     public Integer phone;
+    public Integer radius;
     public Boolean firstLogIn;
     public User()
     {
@@ -24,5 +25,6 @@ public class User implements Serializable
         this.phone = Phone;
         this.interestedIn = InterestedIn;
         firstLogIn = true;
+        radius = -1;
     }
 }

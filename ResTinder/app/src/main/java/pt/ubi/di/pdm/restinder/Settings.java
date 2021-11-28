@@ -22,11 +22,12 @@ import com.google.firebase.database.ValueEventListener;
 
 public class Settings extends Activity
 {
-    EditText textnome,textapelido,textmailparceiro,texttelemovel,textradius;
+    EditText textnome,textapelido,textmailparceiro,texttelemovel,textradius,pickDate;
     private FirebaseAuth mAuth;
     private FirebaseUser user;
     private DatabaseReference reference;
     private String userID;
+    private Integer currentAge;
     User userProfile;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +39,7 @@ public class Settings extends Activity
         textmailparceiro = findViewById(R.id.textmailparceiro);
         texttelemovel = findViewById(R.id.texttelemovel);
         textradius = findViewById(R.id.textradius);
+        pickDate = findViewById(R.id.pickDate);
 
         mAuth = FirebaseAuth.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -55,6 +57,8 @@ public class Settings extends Activity
                     textnome.setText(userProfile.firstName);
                     textapelido.setText(userProfile.lastName);
                     texttelemovel.setText(String.valueOf(userProfile.phone));
+                    pickDate.setText(String.valueOf(userProfile.birthday));
+                    currentAge = userProfile.birthday;
                 }
             }
 
@@ -69,27 +73,14 @@ public class Settings extends Activity
     public void changeUser(View v)
     {
         String emailP = textmailparceiro.getText().toString().trim();
-        String firstName = textnome.getText().toString().trim();
-        String lastName = textapelido.getText().toString().trim();
         String phone = texttelemovel.getText().toString().trim();
         String radius = textradius.getText().toString().trim();
+        String age = pickDate.getText().toString().trim();
 
         if(!Patterns.EMAIL_ADDRESS.matcher(emailP).matches() && !emailP.isEmpty())
         {
             textmailparceiro.setError("Invalid email!");
             textmailparceiro.requestFocus();
-            return;
-        }
-        if(firstName.isEmpty())
-        {
-            textnome.setError("First name is empty!");
-            textnome.requestFocus();
-            return;
-        }
-        if(lastName.isEmpty())
-        {
-            textapelido.setError("Last name is empty!");
-            textapelido.requestFocus();
             return;
         }
         if(phone.isEmpty())
@@ -98,13 +89,22 @@ public class Settings extends Activity
             texttelemovel.requestFocus();
             return;
         }
-        if(radius.isEmpty())
+        if(radius.isEmpty() || Integer.parseInt(radius) <=0)
         {
-            textradius.setError("Radius is empty!");
+            textradius.setError("Radius is invalid!");
             textradius.requestFocus();
             return;
         }
+        if(age.isEmpty() || Integer.parseInt(age) < currentAge)
+        {
+            pickDate.setError("Age is invalid!");
+            pickDate.requestFocus();
+            return;
+        }
         userProfile.firstLogIn = false;
+        userProfile.phone = Integer.parseInt(phone);
+        userProfile.radius = Integer.parseInt(radius)*1000;
+        userProfile.birthday = Integer.parseInt(age);
         FirebaseDatabase.getInstance().getReference("Users")
                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .setValue(userProfile).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -120,6 +120,7 @@ public class Settings extends Activity
                 }
             }
         });
+
 
     }
     @Override

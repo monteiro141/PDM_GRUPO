@@ -151,11 +151,11 @@
             android:id="@+id/pickDate"
             android:layout_width="70dp"
             android:layout_height="60dp"
-            android:layout_weight="1"
             android:layout_marginLeft="20dp"
-            android:inputType="number"
             android:layout_marginTop="2dp"
+            android:layout_weight="1"
             android:fontFamily="sans-serif-black"
+            android:inputType="number"
             android:textColor="@color/black" />
 
         <Button
@@ -167,7 +167,8 @@
             android:text="Confirm Changes"
             android:layout_weight="1"
             android:layout_marginTop="2dp"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:onClick="changeUser"/>
     </LinearLayout>
 
     <LinearLayout
