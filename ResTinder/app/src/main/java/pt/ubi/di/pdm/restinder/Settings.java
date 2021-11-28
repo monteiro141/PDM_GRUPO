@@ -57,7 +57,11 @@ public class Settings extends Activity
                     textnome.setText(userProfile.firstName);
                     textapelido.setText(userProfile.lastName);
                     texttelemovel.setText(String.valueOf(userProfile.phone));
+                    if(!userProfile.state.equals("Single"))
+                        textmailparceiro.setText(userProfile.state);
                     pickDate.setText(String.valueOf(userProfile.birthday));
+                    if(userProfile.radius != 0)
+                        textradius.setText(String.valueOf(userProfile.radius/1000));
                     currentAge = userProfile.birthday;
                 }
             }
@@ -105,6 +109,7 @@ public class Settings extends Activity
         userProfile.phone = Integer.parseInt(phone);
         userProfile.radius = Integer.parseInt(radius)*1000;
         userProfile.birthday = Integer.parseInt(age);
+        userProfile.state = emailP;
         FirebaseDatabase.getInstance().getReference("Users")
                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .setValue(userProfile).addOnCompleteListener(new OnCompleteListener<Void>() {
