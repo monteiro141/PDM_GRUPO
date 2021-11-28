@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -15,6 +17,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
+
+import org.w3c.dom.Text;
 
 import java.util.Date;
 
@@ -26,9 +30,9 @@ public class Register extends Activity implements View.OnClickListener
     private EditText lastNameRegister;
     private EditText birthDateRegister;
     private EditText civilStateRegister;
-    private EditText genderRegister;
+    private Spinner genderRegister;
     private EditText cellphoneRegister;
-    private EditText preferencesRegister;
+    private Spinner preferencesRegister;
     private FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,9 +60,9 @@ public class Register extends Activity implements View.OnClickListener
         String lastName = lastNameRegister.getText().toString().trim();
         String birthday = birthDateRegister.getText().toString().trim();
         String state = civilStateRegister.getText().toString().trim();
-        String gender = genderRegister.getText().toString().trim();
+        String gender = ((TextView) genderRegister.getSelectedView()).getText().toString().trim();
         String phone = cellphoneRegister.getText().toString().trim();
-        String interestedIn = preferencesRegister.getText().toString().trim();
+        String interestedIn = ((TextView) preferencesRegister.getSelectedView()).getText().toString().trim();
 
         if(!Patterns.EMAIL_ADDRESS.matcher(email).matches())
         {
@@ -93,12 +97,6 @@ public class Register extends Activity implements View.OnClickListener
         if(Integer.parseInt(birthday)<=18)
         {
             firstNameRegister.setError("Needs to be 18 or older!");
-            firstNameRegister.requestFocus();
-            return;
-        }
-        if(state.isEmpty())
-        {
-            firstNameRegister.setError("State is empty!");
             firstNameRegister.requestFocus();
             return;
         }
