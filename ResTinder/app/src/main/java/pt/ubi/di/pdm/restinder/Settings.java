@@ -113,6 +113,7 @@ public class Settings extends Activity
                 if(task.isSuccessful())
                 {
                     Toast.makeText(Settings.this,"User has been updated!",Toast.LENGTH_LONG).show();
+                    goToHome();
 
                 }else
                 {
@@ -127,5 +128,11 @@ public class Settings extends Activity
     public void onBackPressed() {
         /*finish();
         startActivity(new Intent(this,Home.class));*/
+    }
+
+    public void goToHome()
+    {
+        super.finish();
+        startActivity(new Intent(this,Home.class));
     }
 }
