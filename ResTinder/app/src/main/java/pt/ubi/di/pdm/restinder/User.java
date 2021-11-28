@@ -5,9 +5,10 @@ import java.io.Serializable;
 
 public class User implements Serializable
 {
-    public String email,firstName, lastName, state,gender,interestedIn,firstLogIn;
+    public String email,firstName, lastName, state,gender,interestedIn;
     public Integer birthday;
     public Integer phone;
+    public Boolean firstLogIn;
     public User()
     {
 
@@ -22,6 +23,6 @@ public class User implements Serializable
         this.gender = Gender;
         this.phone = Phone;
         this.interestedIn = InterestedIn;
-        firstLogIn = "true";
+        firstLogIn = true;
     }
 }

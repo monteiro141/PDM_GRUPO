@@ -58,10 +58,10 @@ public class Register extends Activity implements View.OnClickListener
         String password = passwordRegister.getText().toString().trim();
         String firstName = firstNameRegister.getText().toString().trim();
         String lastName = lastNameRegister.getText().toString().trim();
-        String birthday = birthDateRegister.getText().toString().trim();
-        String state = civilStateRegister.getText().toString().trim();
+        Integer birthday =  Integer.parseInt(birthDateRegister.getText().toString().trim());
+        //String state = civilStateRegister.getText().toString().trim();
         String gender = ((TextView) genderRegister.getSelectedView()).getText().toString().trim();
-        String phone = cellphoneRegister.getText().toString().trim();
+        Integer phone = Integer.parseInt(cellphoneRegister.getText().toString().trim());
         String interestedIn = ((TextView) preferencesRegister.getSelectedView()).getText().toString().trim();
 
         if(!Patterns.EMAIL_ADDRESS.matcher(email).matches())
@@ -84,38 +84,26 @@ public class Register extends Activity implements View.OnClickListener
         }
         if(lastName.isEmpty())
         {
-            firstNameRegister.setError("Last name is empty!");
-            firstNameRegister.requestFocus();
+            lastNameRegister.setError("Last name is empty!");
+            lastNameRegister.requestFocus();
             return;
         }
-        if(birthday.isEmpty())
+        if(birthDateRegister.getText().toString().trim().isEmpty())
         {
-            firstNameRegister.setError("Birthday is wrong!");
-            firstNameRegister.requestFocus();
+            birthDateRegister.setError("Birthday is wrong!");
+            birthDateRegister.requestFocus();
             return;
         }
-        if(Integer.parseInt(birthday)<=18)
+        if(birthday<=18)
         {
-            firstNameRegister.setError("Needs to be 18 or older!");
-            firstNameRegister.requestFocus();
+            birthDateRegister.setError("Needs to be 18 or older!");
+            birthDateRegister.requestFocus();
             return;
         }
-        if(gender.isEmpty())
+        if(cellphoneRegister.getText().toString().trim().isEmpty())
         {
-            firstNameRegister.setError("Gender is empty!");
-            firstNameRegister.requestFocus();
-            return;
-        }
-        if(phone.isEmpty())
-        {
-            firstNameRegister.setError("Phone is empty!");
-            firstNameRegister.requestFocus();
-            return;
-        }
-        if(interestedIn.isEmpty())
-        {
-            firstNameRegister.setError("Interested in is empty!");
-            firstNameRegister.requestFocus();
+            cellphoneRegister.setError("Phone is empty!");
+            cellphoneRegister.requestFocus();
             return;
         }
 
@@ -125,9 +113,7 @@ public class Register extends Activity implements View.OnClickListener
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful())
                         {
-                            User user = new User(email,firstName,lastName,birthday,state,gender,phone,interestedIn);
-                            /*System.out.println("Arroz");
-                            System.out.println(user);*/
+                            User user = new User(email,firstName,lastName,birthday,"Single",gender,phone,interestedIn);
                             FirebaseDatabase.getInstance().getReference("Users")
                                     .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                                     .setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {

@@ -152,7 +152,6 @@ public class MainActivity extends Activity {
              */
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 userProfile = dataSnapshot.getValue(User.class);
-                System.out.println(userProfile.toString());
                 if (userProfile != null) {
                     checkFirstLogIn();
                 }
@@ -166,7 +165,7 @@ public class MainActivity extends Activity {
     }
     public void checkFirstLogIn()
     {
-        if(userProfile.firstLogIn.equals("yes"))
+        if(userProfile.firstLogIn)
         {
             super.finish();
             startActivity(new Intent(this, Settings.class));

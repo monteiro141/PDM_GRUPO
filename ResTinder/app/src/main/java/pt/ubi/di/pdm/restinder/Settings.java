@@ -54,7 +54,7 @@ public class Settings extends Activity
                 if (userProfile != null) {
                     textnome.setText(userProfile.firstName);
                     textapelido.setText(userProfile.lastName);
-                    texttelemovel.setText(userProfile.phone);
+                    texttelemovel.setText(String.valueOf(userProfile.phone));
                 }
             }
 
@@ -104,7 +104,7 @@ public class Settings extends Activity
             textradius.requestFocus();
             return;
         }
-        userProfile.firstLogIn = "false";
+        userProfile.firstLogIn = false;
         FirebaseDatabase.getInstance().getReference("Users")
                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .setValue(userProfile).addOnCompleteListener(new OnCompleteListener<Void>() {
