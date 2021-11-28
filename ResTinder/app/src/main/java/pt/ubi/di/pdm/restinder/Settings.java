@@ -109,7 +109,12 @@ public class Settings extends Activity
         userProfile.phone = Integer.parseInt(phone);
         userProfile.radius = Integer.parseInt(radius)*1000;
         userProfile.birthday = Integer.parseInt(age);
-        userProfile.state = emailP;
+        if(emailP.isEmpty()){
+            userProfile.state = "Single";
+        }else{
+            userProfile.state = emailP;
+        }
+
         FirebaseDatabase.getInstance().getReference("Users")
                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .setValue(userProfile).addOnCompleteListener(new OnCompleteListener<Void>() {
