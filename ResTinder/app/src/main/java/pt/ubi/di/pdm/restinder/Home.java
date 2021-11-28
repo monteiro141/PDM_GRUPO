@@ -64,6 +64,7 @@ public class Home extends Activity implements LocationListener{
     private TextView nameRestaurantDisplay;
     private double currentLat = 0.0, currentLong = 0.0;
     private double radius = 5000;
+    private float x,y;
     User userProfile;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,6 +165,26 @@ public class Home extends Activity implements LocationListener{
             });
 
             queue.add(data);
+        /*restaurantView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                LinearLayout.LayoutParams layoutParams =(LinearLayout.LayoutParams) restaurantView.getLayoutParams();
+
+                switch (motionEvent.getAction()){
+                    case MotionEvent.ACTION_DOWN:
+                        x=view.getX() - motionEvent.getRawX();
+                        y=view.getY() - motionEvent.getRawY();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        view.animate().x(motionEvent.getRawX() +x).y(motionEvent.getRawY()+y).setDuration(0).start();
+                        break;
+                    default:
+                        return false;
+                }
+
+                return true;
+            }
+        });*/
         }
 
     @Override
