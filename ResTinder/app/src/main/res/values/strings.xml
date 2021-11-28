@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">ResTinder</string>
     <string name="googlePlacesKey">AIzaSyCkPy2xKkFKwz4wr49yUXU9v66Bb7J38-Y</string>
+    <string-array name="genders">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
 </resources>

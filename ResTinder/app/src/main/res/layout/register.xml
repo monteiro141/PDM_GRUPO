@@ -134,7 +134,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="sans-serif-black"
-                android:text="Birth Date"
+                android:text="Birth Year"
                 android:textAlignment="center" />
 
             <Space
@@ -147,7 +147,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:inputType="date"
-                android:hint="Write your birth date here"
+                android:hint="Write your birth year here"
                 android:textAlignment="center" />
 
             <Space
@@ -173,7 +173,8 @@
                 android:id="@+id/civilStateRegister"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:hint="Write your civil state here"
+                android:focusable="false"
+                android:text="Single"
                 android:textAlignment="center" />
 
             <Space
@@ -195,11 +196,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="5" />
 
-            <EditText
+            <Spinner
                 android:id="@+id/genderRegister"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:hint="Write your gender here"
+                android:entries="@array/genders"
                 android:textAlignment="center" />
 
             <Space
@@ -225,7 +226,7 @@
                 android:id="@+id/cellphoneRegister"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number"
+                android:inputType="phone"
                 android:hint="Write your phone number here"
                 android:textAlignment="center" />
 
@@ -248,11 +249,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="5" />
 
-            <EditText
+            <Spinner
                 android:id="@+id/preferencesRegister"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:hint="Write your preferences here"
+                android:entries="@array/genders"
                 android:textAlignment="center" />
 
             <Space
