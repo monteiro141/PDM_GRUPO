@@ -324,10 +324,12 @@ public class Home extends Activity implements LocationListener{
 
     public void addToFirebase(){
         userProfile.matchPending=true;
-        FirebaseDatabase database=FirebaseDatabase.getInstance();
+        reference.child(userID).setValue(userProfile);
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        reference = FirebaseDatabase.getInstance().getReference("Swipes");
+        userID = user.getUid();
 
-        Task<Void> ref=database.getReference("Swipes")
-                .child(mAuth.getCurrentUser().getUid())
+        reference.child(userID)
                 .setValue(personSwipes).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
