@@ -214,6 +214,21 @@ public class Home extends Activity implements LocationListener{
     public void onLocationChanged(@NonNull Location location) {
         currentLong = location.getLongitude();
         currentLat = location.getLatitude();
-
     }
+
+    @Override
+    public void onProviderEnabled(@NonNull String provider) {
+        System.out.println("");
+    }
+
+    @Override
+    public void onProviderDisabled(@NonNull String provider) {
+        System.out.println("");
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        System.out.println("");
+    }
+
 }

@@ -85,6 +85,14 @@
                 android:textSize="25dp"
                 android:textColor="@color/black"/>
 
+            <ProgressBar
+                android:id="@+id/loading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:layout_gravity="center"
+                android:indeterminate="true" />
+
         </LinearLayout>
 
     </LinearLayout>

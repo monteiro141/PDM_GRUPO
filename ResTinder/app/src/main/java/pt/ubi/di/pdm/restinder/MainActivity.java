@@ -18,6 +18,7 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -44,6 +45,7 @@ public class MainActivity extends Activity {
     private SharedPreferences.Editor loginEditor;
     private CheckBox saveLoginBox;
     private Boolean saveLogin;
+    private ProgressBar loading;
     User userProfile;
     //Permissions api
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -55,6 +57,10 @@ public class MainActivity extends Activity {
         emailET = findViewById(R.id.emailFieldID);
         passwordET = findViewById(R.id.passwordFieldID);
         saveLoginBox = findViewById(R.id.saveLoginBox);
+        loading = findViewById(R.id.loading);
+
+        //begone LOADING
+        loading.setVisibility(View.GONE);
 
         //object of sharedPreferences to save the values on login
         loginPF = getSharedPreferences("loginPrefs",MODE_PRIVATE);
@@ -141,6 +147,8 @@ public class MainActivity extends Activity {
         finish();
     }
     public void login(){
+        loading.setVisibility(View.VISIBLE);
+
         user = FirebaseAuth.getInstance().getCurrentUser();
         reference = FirebaseDatabase.getInstance().getReference("Users");
         userID = user.getUid();
@@ -174,4 +182,5 @@ public class MainActivity extends Activity {
             startActivity(new Intent(this, Home.class));
         }
     }
+
 }
