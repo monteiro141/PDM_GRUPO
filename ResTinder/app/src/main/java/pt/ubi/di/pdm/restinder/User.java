@@ -10,6 +10,7 @@ public class User implements Serializable
     public Integer phone;
     public Integer radius;
     public Boolean firstLogIn;
+    public boolean matchPending;
     public User()
     {
 
@@ -24,6 +25,7 @@ public class User implements Serializable
         this.gender = Gender;
         this.phone = Phone;
         this.interestedIn = InterestedIn;
+        this.matchPending=false;
         firstLogIn = true;
         radius = -1;
     }

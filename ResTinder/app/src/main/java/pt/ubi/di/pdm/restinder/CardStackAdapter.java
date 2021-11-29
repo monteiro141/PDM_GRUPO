@@ -41,24 +41,26 @@ public class CardStackAdapter extends RecyclerView.Adapter<CardStackAdapter.View
 
     class ViewHolder extends RecyclerView.ViewHolder{
         ImageView image;
-        TextView name,city,age;
+        TextView name;
         public ViewHolder(@NonNull View itemView){
             super(itemView);
             image = itemView.findViewById(R.id.item_image);
             name = itemView.findViewById(R.id.item_name);
-            age = itemView.findViewById(R.id.item_age);
-            city = itemView.findViewById(R.id.item_city);
         }
 
         public void setData(ItemModel data) {
+            String url="https://maps.googleapis.com/maps/api/place/photo" +
+                    "?maxwidth=800" +
+                    "&photo_reference=" +data.getImageurl()+
+                    "&key=AIzaSyCkPy2xKkFKwz4wr49yUXU9v66Bb7J38-Y";
+            //Picasso.get().load(url2).into(restaurantView);
             Picasso.get()
-                    .load(data.getImage())
+                    .load(url)
                     .fit()
                     .centerCrop()
                     .into(image);
             name.setText(data.getName());
-            city.setText(data.getAge());
-            age.setText(data.getCity());
+
         }
     }
     public List<ItemModel> getItems() {

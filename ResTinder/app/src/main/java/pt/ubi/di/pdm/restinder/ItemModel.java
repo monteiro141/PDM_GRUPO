@@ -1,26 +1,19 @@
 package pt.ubi.di.pdm.restinder;
 
 public class ItemModel {
-    private int image;
-    private String name, city,age;
+    private String name, imageurl;
     public ItemModel()
     {
 
     }
-    public ItemModel(int image, String name, String city, String age)
+    public ItemModel(String name,String imageurl)
     {
-        this.image = image;
         this.name = name;
-        this.city = city;
-        this.age = age;
-    }
-    public int getImage() {
-        return image;
+        this.imageurl=imageurl;
     }
 
-    public void setImage(int image) {
-        this.image = image;
-    }
+
+
 
     public String getName() {
         return name;
@@ -30,21 +23,12 @@ public class ItemModel {
         this.name = name;
     }
 
-    public String getCity() {
-        return city;
+    public String getImageurl() {
+        return imageurl;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public void setImageurl(String imageurl) {
+        this.imageurl = imageurl;
     }
-
-    public String getAge() {
-        return age;
-    }
-
-    public void setAge(String age) {
-        this.age = age;
-    }
-
 
 }
