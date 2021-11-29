@@ -323,6 +323,7 @@ public class Home extends Activity implements LocationListener{
     }
 
     public void addToFirebase(){
+        userProfile.matchPending=true;
         FirebaseDatabase database=FirebaseDatabase.getInstance();
 
         Task<Void> ref=database.getReference("Swipes")
