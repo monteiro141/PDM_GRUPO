@@ -4,11 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradation_black"
+    android:background="?attr/selectableItemBackground"
+    android:foreground="?attr/selectableItemBackground"
     android:gravity="center"
     android:orientation="vertical"
     android:weightSum="10"
-    tools:context=".Match">
+    tools:context=".Match"
+    app:cardBackgroundColor="@android:color/white">
 
 
     <LinearLayout
@@ -18,6 +20,7 @@
         android:layout_weight="9.18"
         android:gravity="center"
         android:orientation="horizontal"
+        android:background="@drawable/gradation_black"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <TextView
@@ -84,6 +87,7 @@
         android:layout_weight="0.82"
         android:gravity="center|bottom"
         android:orientation="horizontal"
+        android:background="@drawable/overlay_black"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <Space
