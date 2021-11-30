@@ -35,6 +35,11 @@ import com.google.firebase.database.ValueEventListener;
 
 
 public class MainActivity extends Activity {
+    /*Variable to save the logIn state*/
+    public static SharedPreferences keepLogIn;
+    public static SharedPreferences.Editor keepLogInEditor;
+    public static Boolean keepLogInState;
+
     private EditText emailET;
     private EditText passwordET;
     private FirebaseAuth mAuth;
@@ -65,7 +70,6 @@ public class MainActivity extends Activity {
         //object of sharedPreferences to save the values on login
         loginPF = getSharedPreferences("loginPrefs",MODE_PRIVATE);
         loginEditor = loginPF.edit();
-
         //initialize boolean value to false and set it under "loginPrefs"
         saveLogin = loginPF.getBoolean("loginState",false);
 
@@ -75,6 +79,10 @@ public class MainActivity extends Activity {
             saveLoginBox.setChecked(true);
         }
 
+        keepLogIn = getSharedPreferences("keepLogInPref",MODE_PRIVATE);
+        keepLogInEditor = keepLogIn.edit();
+        keepLogInState = keepLogIn.getBoolean("keepLogInState",false);
+
         if(ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(this,Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED){
@@ -82,6 +90,7 @@ public class MainActivity extends Activity {
             requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},1);
             requestPermissions(new String[]{Manifest.permission.INTERNET},1);
         }
+        keepLogIn();
 
     }
     public void registerUser(View v){
@@ -89,8 +98,8 @@ public class MainActivity extends Activity {
         startActivity(new Intent(this,Register.class));
     }
     public void userLogin(View v) {
-        String email = emailET.getText().toString().trim(); // editTextEmail.getText().toString().trim();
-        String password = passwordET.getText().toString().trim();;
+        String email = emailET.getText().toString().trim();
+        String password = passwordET.getText().toString().trim();
 
         if(!Patterns.EMAIL_ADDRESS.matcher(email).matches() || email.isEmpty()) {
             //System.out.println("Invalid email");
@@ -119,6 +128,8 @@ public class MainActivity extends Activity {
                             loginEditor.putString("username",emailET.getText().toString());
                             loginEditor.putString("password",passwordET.getText().toString());
                             loginEditor.commit();
+
+
                         }
 
                         else{
@@ -127,6 +138,8 @@ public class MainActivity extends Activity {
                         }
 
                         //user login
+                        keepLogInEditor.putBoolean("keepLogInState",true);
+                        keepLogInEditor.commit();
                         login();
 
                     }else{
@@ -177,12 +190,75 @@ public class MainActivity extends Activity {
         {
             super.finish();
             startActivity(new Intent(this, Settings.class));
+        }else if(userProfile.matchPending){
+            super.finish();
+            startActivity(new Intent(this, Match.class));
         }else{
             super.finish();
             startActivity(new Intent(this, Home.class));
         }
     }
+    public void keepLogIn() {
+        if(keepLogInState){
+            String email = emailET.getText().toString().trim();
+            String password = passwordET.getText().toString().trim();
+
+            if(!Patterns.EMAIL_ADDRESS.matcher(email).matches() || email.isEmpty()) {
+                //System.out.println("Invalid email");
+                emailET.setError("Invalid email!");
+                emailET.requestFocus();
+                return;
+
+            }
+            if(password.isEmpty()) {
+                //System.out.println("Password is empty");
+                passwordET.setError("Password is empty!");
+                passwordET.requestFocus();
+                return;
+            }
+
+            mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if(task.isSuccessful()) {
+                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        if(user.isEmailVerified()) {
+
+                            //save credentials of login => if checkbox is checked
+                            if(saveLoginBox.isChecked()){
+                                loginEditor.putBoolean("loginState",true);
+                                loginEditor.putString("username",emailET.getText().toString());
+                                loginEditor.putString("password",passwordET.getText().toString());
+                                loginEditor.commit();
 
 
+                            }
+
+                            else{
+                                loginEditor.clear();
+                                loginEditor.commit();
+                            }
+
+                            //user login
+                            keepLogInEditor.putBoolean("keepLogInState",true);
+                            keepLogInEditor.commit();
+                            login();
+
+                        }else{
+                            user.sendEmailVerification();
+                            Toast.makeText(MainActivity.this,"Check your email to verify your account!",Toast.LENGTH_LONG).show();
+                            keepLogInEditor.putBoolean("keepLogInState",false);
+                            keepLogInEditor.commit();
+                        }
+
+                    }else {
+                        Toast.makeText(MainActivity.this,"Failed to login!",Toast.LENGTH_LONG).show();
+                        keepLogInEditor.putBoolean("keepLogInState",false);
+                        keepLogInEditor.commit();
+                    }
+                }
+            });
+        }
+    }
 
 }

@@ -104,8 +104,7 @@ public class Home extends Activity implements LocationListener{
 
     @Override
     public void onBackPressed() {
-        FirebaseAuth.getInstance().signOut();
-        goToMainActivity();
+
     }
     public void goToMainActivity(){
         finish();
@@ -241,15 +240,6 @@ public class Home extends Activity implements LocationListener{
 
     private void FirebaseInicialized(){
         mAuth = FirebaseAuth.getInstance();
-        logout = (ImageButton) findViewById(R.id.btn_back);
-
-        logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FirebaseAuth.getInstance().signOut();
-                goToMainActivity();
-            }
-        });
         user = FirebaseAuth.getInstance().getCurrentUser();
         reference = FirebaseDatabase.getInstance().getReference("Users");
         userID = user.getUid();
@@ -345,15 +335,39 @@ public class Home extends Activity implements LocationListener{
         startActivity(new Intent(this,Match.class));
     }
 
-    public void onLogout(){
+    public void onLogout(View v){
+        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        alertDialog.setTitle("Log Out");
+        alertDialog.setMessage("Do you wish to log out from your account?");
 
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "YES", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getApplicationContext(), "You have been logged out.", Toast.LENGTH_SHORT).show();
+                FirebaseAuth.getInstance().signOut();
+                MainActivity.keepLogInEditor.putBoolean("keepLogInState",false);
+                MainActivity.keepLogInEditor.commit();
+                goToMainActivity();
+            }
+        });
+
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "NO", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+
+        alertDialog.show();
     }
 
-    public void onSettings(){
-
+    public void onSettings(View v){
+        startActivity(new Intent(this,Settings.class));
     }
 
-    public void onHome(){
-
+    public void onMatch(View v){
+        if(!userProfile.matchPending){
+            Toast.makeText(Home.this,"You have no pending match!",Toast.LENGTH_SHORT).show();
+        }
+        else{
+            goToMatch();
+        }
     }
 }

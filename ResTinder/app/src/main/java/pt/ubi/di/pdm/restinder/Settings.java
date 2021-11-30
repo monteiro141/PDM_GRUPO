@@ -1,6 +1,8 @@
 package pt.ubi.di.pdm.restinder;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
@@ -80,7 +82,7 @@ public class Settings extends Activity
         String phone = texttelemovel.getText().toString().trim();
         String radius = textradius.getText().toString().trim();
         String age = pickDate.getText().toString().trim();
-
+        boolean firstTimeInSettings= userProfile.firstLogIn;
         if(!Patterns.EMAIL_ADDRESS.matcher(emailP).matches() && !emailP.isEmpty())
         {
             textmailparceiro.setError("Invalid email!");
@@ -123,7 +125,12 @@ public class Settings extends Activity
                 if(task.isSuccessful())
                 {
                     Toast.makeText(Settings.this,"User has been updated!",Toast.LENGTH_LONG).show();
-                    goToHome();
+                    if(firstTimeInSettings){
+                        goToHome();
+                    }else{
+                        finish();
+                    }
+
 
                 }else
                 {
@@ -136,8 +143,9 @@ public class Settings extends Activity
     }
     @Override
     public void onBackPressed() {
-        /*finish();
-        startActivity(new Intent(this,Home.class));*/
+        if(!userProfile.firstLogIn){
+            super.finish();
+        }
     }
 
     public void goToHome()
@@ -146,16 +154,48 @@ public class Settings extends Activity
         startActivity(new Intent(this,Home.class));
     }
 
-    public void onLogout(){
+    public void onLogout(View v){
+        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        alertDialog.setTitle("Log Out");
+        alertDialog.setMessage("Do you wish to log out from your account?");
 
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "YES", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getApplicationContext(), "You have been logged out.", Toast.LENGTH_SHORT).show();
+                FirebaseAuth.getInstance().signOut();
+                MainActivity.keepLogInEditor.putBoolean("keepLogInState",false);
+                MainActivity.keepLogInEditor.commit();
+                finish();
+                startActivity(new Intent(Settings.this,MainActivity.class));
+            }
+        });
+
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "NO", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+
+        alertDialog.show();
     }
 
-    public void onMatch(){
-
+    public void onMatch(View v){
+        if(userProfile.firstLogIn){
+            Toast.makeText(Settings.this,"You need to complete the settings!",Toast.LENGTH_SHORT).show();
+        }
+        else if(userProfile.matchPending){
+            super.finish();
+            startActivity(new Intent(this,Match.class));
+        }else{
+            Toast.makeText(Settings.this,"You have no pending match!",Toast.LENGTH_SHORT).show();
+        }
     }
 
-    public void onHome(){
-
+    public void onHome(View v){
+        if(!userProfile.firstLogIn && !userProfile.matchPending ){
+            super.finish();
+        }else{
+            Toast.makeText(Settings.this,"You need to complete the settings!",Toast.LENGTH_SHORT).show();
+        }
     }
 
 }
