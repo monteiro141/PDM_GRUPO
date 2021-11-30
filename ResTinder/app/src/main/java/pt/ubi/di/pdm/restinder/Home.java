@@ -344,4 +344,16 @@ public class Home extends Activity implements LocationListener{
         super.finish();
         startActivity(new Intent(this,Match.class));
     }
+
+    public void onLogout(){
+
+    }
+
+    public void onSettings(){
+
+    }
+
+    public void onHome(){
+
+    }
 }

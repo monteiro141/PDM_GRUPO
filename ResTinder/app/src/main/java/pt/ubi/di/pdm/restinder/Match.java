@@ -1,6 +1,7 @@
 package pt.ubi.di.pdm.restinder;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 
@@ -12,6 +13,19 @@ public class Match extends Activity
         setContentView(R.layout.match);
 
 
+
+    }
+
+    public void onLogout(){
+
+    }
+
+    public void onSettings(){
+        super.finish();
+        startActivity(new Intent(this, Settings.class));
+    }
+
+    public void onHome(){
 
     }
 }

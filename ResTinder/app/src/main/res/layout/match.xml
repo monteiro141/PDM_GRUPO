@@ -170,23 +170,11 @@
             android:layout_weight="1" />
 
         <ImageButton
-            android:id="@+id/button3"
-            android:layout_width="66dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="28dp"
-            android:background="@drawable/arrow_nobg" />
-
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <ImageButton
-            android:id="@+id/home"
-            android:onClick="goHOME"
+            android:id="@+id/btn_back"
             android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/home" />
+            android:layout_height="match_parent"
+            android:background="@drawable/ic_baseline_exit_to_app_24"
+            android:onClick="onLogout"/>
 
         <Space
             android:layout_width="wrap_content"
@@ -194,10 +182,11 @@
             android:layout_weight="1" />
 
         <ImageButton
-            android:id="@+id/button"
+            android:id="@+id/btn_home"
             android:layout_width="66dp"
             android:layout_height="match_parent"
-            android:background="@drawable/heart_nobg" />
+            android:background="@drawable/ic_baseline_home_24"
+            android:onClick="onHome"/>
 
         <Space
             android:layout_width="wrap_content"
@@ -205,10 +194,22 @@
             android:layout_weight="1" />
 
         <ImageButton
-            android:id="@+id/button2"
+            android:id="@+id/btn_match"
             android:layout_width="66dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/ic_baseline_favorite_border_24_selected" />
+
+        <Space
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/settings" />
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:id="@+id/btn_settings"
+            android:layout_width="66dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/ic_baseline_settings_24"
+            android:onClick="onSettings"/>
 
         <Space
             android:layout_width="wrap_content"

@@ -25,7 +25,7 @@
             android:layout_width="66sp"
             android:layout_height="66sp"
             android:layout_weight="0.3"
-            android:background="@drawable/reject" />
+            android:background="@drawable/ic_baseline_arrow_back_24" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -74,7 +74,7 @@
             android:layout_width="66sp"
             android:layout_height="66sp"
             android:layout_weight="0.3"
-            android:background="@drawable/accept" />
+            android:background="@drawable/ic_baseline_arrow_forward_24" />
 
     </LinearLayout>
 
@@ -94,8 +94,9 @@
         <ImageButton
             android:id="@+id/btn_back"
             android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/log_out" />
+            android:layout_height="match_parent"
+            android:background="@drawable/ic_baseline_exit_to_app_24"
+            android:onClick="onLogout"/>
 
         <Space
             android:layout_width="wrap_content"
@@ -106,7 +107,7 @@
             android:id="@+id/btn_home"
             android:layout_width="66dp"
             android:layout_height="match_parent"
-            android:background="@drawable/home" />
+            android:background="@drawable/ic_baseline_home_24_selected" />
 
         <Space
             android:layout_width="wrap_content"
@@ -116,8 +117,9 @@
         <ImageButton
             android:id="@+id/btn_match"
             android:layout_width="66dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/heart_nobg" />
+            android:layout_height="match_parent"
+            android:background="@drawable/ic_baseline_favorite_border_24"
+            android:onClick="onMatch"/>
 
         <Space
             android:layout_width="wrap_content"
@@ -127,8 +129,9 @@
         <ImageButton
             android:id="@+id/btn_settings"
             android:layout_width="66dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/settings" />
+            android:layout_height="match_parent"
+            android:background="@drawable/ic_baseline_settings_24"
+            android:onClick="onSettings"/>
 
         <Space
             android:layout_width="wrap_content"

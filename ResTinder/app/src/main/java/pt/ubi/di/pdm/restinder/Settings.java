@@ -145,4 +145,17 @@ public class Settings extends Activity
         super.finish();
         startActivity(new Intent(this,Home.class));
     }
+
+    public void onLogout(){
+
+    }
+
+    public void onMatch(){
+
+    }
+
+    public void onHome(){
+
+    }
+
 }
