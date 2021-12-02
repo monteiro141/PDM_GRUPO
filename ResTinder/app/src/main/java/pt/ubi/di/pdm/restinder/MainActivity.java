@@ -51,21 +51,25 @@ public class MainActivity extends Activity {
     private CheckBox saveLoginBox;
     private Boolean saveLogin;
     private ProgressBar loading;
+    private Boolean entrou, entrou1;
     User userProfile;
     //Permissions api
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        mAuth = FirebaseAuth.getInstance();
+        //setContentView(R.layout.activity_main);
+        /*mAuth = FirebaseAuth.getInstance();
         emailET = findViewById(R.id.emailFieldID);
         passwordET = findViewById(R.id.passwordFieldID);
         saveLoginBox = findViewById(R.id.saveLoginBox);
-        loading = findViewById(R.id.loading);
+        loading = findViewById(R.id.loading);*/
 
         //begone LOADING
-        loading.setVisibility(View.GONE);
+        //loading.setVisibility(View.GONE);
+
+        entrou = false;
+        entrou1 = false;
 
         //object of sharedPreferences to save the values on login
         loginPF = getSharedPreferences("loginPrefs",MODE_PRIVATE);
@@ -73,11 +77,11 @@ public class MainActivity extends Activity {
         //initialize boolean value to false and set it under "loginPrefs"
         saveLogin = loginPF.getBoolean("loginState",false);
 
-        if(saveLogin){
+        /*if(saveLogin){
             emailET.setText(loginPF.getString("username",""));
             passwordET.setText(loginPF.getString("password",""));
             saveLoginBox.setChecked(true);
-        }
+        }*/
 
         keepLogIn = getSharedPreferences("keepLogInPref",MODE_PRIVATE);
         keepLogInEditor = keepLogIn.edit();
@@ -90,7 +94,40 @@ public class MainActivity extends Activity {
             requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},1);
             requestPermissions(new String[]{Manifest.permission.INTERNET},1);
         }
-        keepLogIn();
+
+        //se for true o loginState
+        /*loginEditor.putBoolean("loginState",false);
+        loginEditor.commit();*/
+
+        entrou1 = keepLogIn.getBoolean("keepLogInState",false);
+        if(!entrou1) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_main);
+
+            mAuth = FirebaseAuth.getInstance();
+            emailET = findViewById(R.id.emailFieldID);
+            passwordET = findViewById(R.id.passwordFieldID);
+            saveLoginBox = findViewById(R.id.saveLoginBox);
+            loading = findViewById(R.id.loading);
+
+            //begone LOADING
+            loading.setVisibility(View.GONE);
+
+            if(saveLogin){
+                emailET.setText(loginPF.getString("username",""));
+                passwordET.setText(loginPF.getString("password",""));
+                saveLoginBox.setChecked(true);
+            }
+            keepLogIn();
+        }
+
+        //condição => ver quais o utilizador quer entrar se tiver login efetuado
+        else {
+            //super.finish();
+            startActivity(new Intent(this, Home.class));
+        }
+
+        //keepLogIn();
 
     }
     public void registerUser(View v){
@@ -128,7 +165,6 @@ public class MainActivity extends Activity {
                             loginEditor.putString("username",emailET.getText().toString());
                             loginEditor.putString("password",passwordET.getText().toString());
                             loginEditor.commit();
-
 
                         }
 
