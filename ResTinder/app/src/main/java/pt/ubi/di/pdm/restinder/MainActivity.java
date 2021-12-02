@@ -82,6 +82,7 @@ public class MainActivity extends Activity {
         if(keepLogInState){
             //redirect to home/match/settings with login
             /*create a different xml for this action*/
+            setContentView(R.layout.loading);
             keepLogIn();
         }else{
             setContentView(R.layout.activity_main);
