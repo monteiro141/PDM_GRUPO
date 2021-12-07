@@ -10,6 +10,66 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 admin.initializeApp(functions.config().firebase);
 const database = admin.database();
+
+exports.completeMatch = functions.region("europe-west1")
+    .database.ref("OnComplete/{userId}")
+    .onCreate((snapshot, context) =>{
+      var user = snapshot.toJSON();
+      var userId = user.userid;
+      database.ref("Match").once("value").then(function(matchResult) {
+        matchResult.forEach( function(innerMatchResult) {
+          var currentMatch = innerMatchResult.toJSON();
+          if (currentMatch.PartnerOne === userId) {
+            let partnerId = currentMatch.PartnerTwo;
+            /**Delete from swipes */
+            removeFromSwipes(userId);
+            removeFromSwipes(partnerId);
+            /**Update matchPending to false on users/id */
+            updateMatchPending(userId);
+            updateMatchPending(partnerId);
+            /**Remove from match */
+            removeFromMatch(innerMatchResult.key);
+            return;
+          } else if (currentMatch.PartnerTwo === userId) {
+            let partnerId = currentMatch.PartnerOne;
+            /**Delete from swipes */
+            removeFromSwipes(userId);
+            removeFromSwipes(partnerId);
+            /**Update matchPending to false on users/id */
+            updateMatchPending(userId);
+            updateMatchPending(partnerId);
+            /**Remove from match */
+            removeFromMatch(innerMatchResult.key);
+            return;
+          }
+        });
+      });
+    });
+
+exports.cancelMatch = functions.region("europe-west1")
+    .database.ref("OnCancel/{userId}")
+    .onCreate((snapshot, context) =>{
+      var user = snapshot.toJSON();
+      var userId = user.userid;
+      if (user.state == "Single") {
+        console.log("Single cancel");
+        /**Delete from swipes */
+        removeFromSwipes(userId);
+        /**Update matchPending to false on users/id */
+        updateMatchPending(userId);
+        /**Remove from queuesingle */
+        removeFromQueueSingle(userId);
+        return;
+      } else {
+        console.log("Partner cancel");
+        /**Delete from swipes */
+        removeFromSwipes(userId);
+        /**Update matchPending to false on users/id */
+        updateMatchPending(userId);
+        return;
+      }
+    });
+
 exports.matchPendingTest = functions.region("europe-west1")
     .database.ref("Users/{userId}/matchPending")
     .onWrite((change, context) =>{
@@ -95,7 +155,7 @@ function matchSingle(userid) {
               
               Object.keys(userRestJson).forEach( function(firstResult) {
                 Object.keys(allSwipes[keyQueueSingle]["restaurantAccepted"]).forEach( function(secondResult) {
-                  console.log("A:"+String(userRestJson[firstResult].name)+"|| B->"+String(allSwipes[keyQueueSingle]["restaurantAccepted"][secondResult].name));
+                  //console.log("A:"+String(userRestJson[firstResult].name)+"|| B->"+String(allSwipes[keyQueueSingle]["restaurantAccepted"][secondResult].name));
                   if (userRestJson[firstResult].name === allSwipes[keyQueueSingle]["restaurantAccepted"][secondResult].name) {
                     //console.log("Entrou no 3º");
                     restArray.push(String(userRestJson[firstResult].name));
@@ -119,6 +179,7 @@ function matchSingle(userid) {
           /**Add to queue single if no match is found */
           if (!match) {
             addQueueSingle({gender: userJson.gender, interestedIn: userJson.interestedIn}, userid);
+            return;
           }
         });
       });
@@ -147,3 +208,24 @@ function getState(path) {
       });
 }
 
+function removeFromSwipes(uid) {
+  const rootRef = database.ref();
+  const storesRef = rootRef.child("Swipes/"+uid);
+  storesRef.set(null);
+}
+function updateMatchPending(uid) {
+  const rootRef = database.ref();
+  const storesRef = rootRef.child("Swipes/"+uid+"/matchPending");
+  storesRef.update(false);
+}
+
+function removeFromQueueSingle(uid) {
+  const rootRef = database.ref();
+  const storesRef = rootRef.child("QueueSingle/"+uid);
+  storesRef.set(null);
+}
+function removeFromMatch(uid) {
+  const rootRef = database.ref();
+  const storesRef = rootRef.child("Match/"+uid);
+  storesRef.set(null);
+}
