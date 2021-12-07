@@ -31,7 +31,7 @@
             android:layout_gravity="center"
             android:fontFamily="sans-serif-black"
             android:gravity="center|top"
-            android:text="MATCHED!"
+            android:text="Pending!"
             android:textAppearance="@style/TextAppearance.AppCompat.Display3"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="sans-serif-black"
-            android:text="NOME"
+            android:text="Name"
             android:textAlignment="center"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -60,12 +60,12 @@
             android:layout_weight="0.25" />
 
         <TextView
-            android:id="@+id/nomeMatchedPreenchido"
+            android:id="@+id/nameRestaurant"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="sans-serif-black"
-            android:hint="NOME DA PESSOA"
+            android:hint="RESTAURANT NAME"
             android:textAlignment="center"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -82,7 +82,7 @@
             android:id="@+id/localizacaoMatched"
             android:fontFamily="sans-serif-black"
             android:layout_gravity="center"
-            android:text="LOCALIZAÇÃO"
+            android:text="Location"
             android:textAlignment="center"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -94,12 +94,12 @@
             android:layout_weight="0.25" />
 
         <TextView
-            android:id="@+id/localizacaoMatchedPreenchido"
+            android:id="@+id/locationRestaurant"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:fontFamily="sans-serif-black"
-            android:hint="LOCALIZAÇÃO DA PESSOA"
+            android:hint="RESTAURANT LOCATION"
             android:textAlignment="center"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -116,7 +116,7 @@
             android:id="@+id/telemovelMatched"
             android:fontFamily="sans-serif-black"
             android:layout_gravity="center"
-            android:text="TELEMÓVEL"
+            android:text="Phone Number"
             android:textAlignment="center"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -128,7 +128,7 @@
             android:layout_weight="0.25" />
 
         <TextView
-            android:id="@+id/telemovelMatchedPreenchido"
+            android:id="@+id/phonePerson"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -150,7 +150,19 @@
             android:id="@+id/contactarMatched"
             android:fontFamily="sans-serif-black"
             android:layout_gravity="center"
-            android:text="CONTACTAR"
+            android:text="CONTACT"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/telemovelMatched" />
+
+        <Button
+            android:id="@+id/cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-black"
+            android:layout_gravity="center"
+            android:onClick="cancelMatch"
+            android:text="CANCEL"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/telemovelMatched" />

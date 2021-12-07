@@ -117,7 +117,7 @@ public class Home extends Activity implements LocationListener{
                     jsonObject.getJSONArray("photos").getJSONObject(0).getString("photo_reference"),
                     jsonObject.getString("business_status"),
                     jsonObject.getJSONObject("geometry").getJSONObject("location").getString("lat"),
-                    jsonObject.getJSONObject("geometry").getJSONObject("location").getString("lat")));
+                    jsonObject.getJSONObject("geometry").getJSONObject("location").getString("lng")));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -173,7 +173,11 @@ public class Home extends Activity implements LocationListener{
                 }
 
                 if(manager.getTopPosition()==restaurantsList.size()){
-                    addToFirebase();
+                    if(personSwipes.restaurantAccepted.size() != 0)
+                        addToFirebase();
+                    else {
+                        Toast.makeText(Home.this,"Change radius in settings",Toast.LENGTH_SHORT).show();
+                    }
                 }
 
             }
@@ -369,5 +373,12 @@ public class Home extends Activity implements LocationListener{
         else{
             goToMatch();
         }
+    }
+
+    public void onHome(View V){
+        /*super.finish();
+        startActivity(new Intent(this,Home.class));
+        overridePendingTransition(0,0);*/
+        tinderSwipe();
     }
 }
