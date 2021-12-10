@@ -105,7 +105,7 @@ public class Match extends Activity
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 //System.out.println(snapshot.child("partnerTwo").getValue().toString());
                 Match SS = new Match();
-                if(snapshot.getValue() != null) {
+                if(snapshot.getValue() != null && (snapshot.child("partnerOne").getValue().toString().equals(userID) || snapshot.child("partnerTwo").getValue().toString().equals(userID))) {
                     SS.lat = snapshot.child("lat").getValue().toString();
                     SS.lng = snapshot.child("lng").getValue().toString();
                     SS.name = snapshot.child("name").getValue().toString();
