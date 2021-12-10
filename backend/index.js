@@ -18,9 +18,13 @@ exports.completeMatch = functions.region("europe-west1")
       var userId = user.userid;
       database.ref("Match").once("value").then(function(matchResult) {
         matchResult.forEach( function(innerMatchResult) {
-          var currentMatch = innerMatchResult.toJSON();
-          if (currentMatch.PartnerOne === userId) {
-            let partnerId = currentMatch.PartnerTwo;
+          let currentMatch = innerMatchResult.toJSON();
+
+          /*console.log("Key: "+String(innerMatchResult.key));
+          console.log("PartnerOne: "+String(currentMatch.partnerOne));
+          console.log("PartnerTwo: "+String(currentMatch.partnerTwo));*/
+          if (currentMatch.partnerOne === userId) {
+            let partnerId = currentMatch.partnerTwo;
             /**Delete from swipes */
             removeFromSwipes(userId);
             removeFromSwipes(partnerId);
@@ -29,9 +33,10 @@ exports.completeMatch = functions.region("europe-west1")
             updateMatchPending(partnerId);
             /**Remove from match */
             removeFromMatch(innerMatchResult.key);
+            removeFromOnComplete(userId);
             return;
-          } else if (currentMatch.PartnerTwo === userId) {
-            let partnerId = currentMatch.PartnerOne;
+          } else if (currentMatch.partnerTwo === userId) {
+            let partnerId = currentMatch.partnerOne;
             /**Delete from swipes */
             removeFromSwipes(userId);
             removeFromSwipes(partnerId);
@@ -40,6 +45,7 @@ exports.completeMatch = functions.region("europe-west1")
             updateMatchPending(partnerId);
             /**Remove from match */
             removeFromMatch(innerMatchResult.key);
+            removeFromOnComplete(userId);
             return;
           }
         });
@@ -51,21 +57,27 @@ exports.cancelMatch = functions.region("europe-west1")
     .onCreate((snapshot, context) =>{
       var user = snapshot.toJSON();
       var userId = user.userid;
+      //console.log("Key: ->"+String(context.params.key));
+      //console.log("json-> "+String(user));
       if (user.state == "Single") {
-        console.log("Single cancel");
+        //console.log("Single cancel");
         /**Delete from swipes */
         removeFromSwipes(userId);
         /**Update matchPending to false on users/id */
         updateMatchPending(userId);
         /**Remove from queuesingle */
         removeFromQueueSingle(userId);
+        /** Remove from onCancel queue*/
+        removeFromOnCancel(userId);
         return;
       } else {
-        console.log("Partner cancel");
+        //console.log("Partner cancel");
         /**Delete from swipes */
         removeFromSwipes(userId);
         /**Update matchPending to false on users/id */
         updateMatchPending(userId);
+        /** Remove from onCancel queue*/
+        removeFromOnCancel(userId);
         return;
       }
     });
@@ -80,7 +92,7 @@ exports.matchPendingTest = functions.region("europe-west1")
         let statePromise = getState("Users/"+userId+"/state");
         statePromise.then(function(resultStatePromise) {
           if (resultStatePromise === "Single") {
-            console.log("Teste single");
+            //console.log("Teste single");
             matchSingle(userId);
           } else {
             matchPartner(userId, resultStatePromise);
@@ -123,7 +135,7 @@ function matchPartner(userid, state) {
                   Object.keys(userJson).forEach( function(randomPicker) {
                     if (restRandom === userJson[randomPicker].name) {
                       //console.log("Entrou com nome: "+String(restRandom));
-                      addMatch({partnerOne: userid, partnerTwo: partnerId, name: userJson[randomPicker].name, lat: userJson[randomPicker].lat, lng: userJson[randomPicker].lng});
+                      addMatch({partnerOne: userid, partnerTwo: partnerId, name: userJson[randomPicker].name, lat: userJson[randomPicker].lat, lng: userJson[randomPicker].lng, address: userJson[randomPicker].address});
                       return;
                     }
                   });
@@ -168,7 +180,7 @@ function matchSingle(userid) {
                 Object.keys(userRestJson).forEach( function(randomPicker) {
                   if (restRandom === userRestJson[randomPicker].name) {
                   //console.log("Entrou com nome: "+String(restRandom));
-                    addMatch({partnerOne: userid, partnerTwo: keyQueueSingle, name: userRestJson[randomPicker].name, lat: userRestJson[randomPicker].lat, lng: userRestJson[randomPicker].lng});
+                    addMatch({partnerOne: userid, partnerTwo: keyQueueSingle, name: userRestJson[randomPicker].name, lat: userRestJson[randomPicker].lat, lng: userRestJson[randomPicker].lng, address: userRestJson[randomPicker].address});
                     addQueueSingle(null, keyQueueSingle);
                     return;
                   }
@@ -215,8 +227,8 @@ function removeFromSwipes(uid) {
 }
 function updateMatchPending(uid) {
   const rootRef = database.ref();
-  const storesRef = rootRef.child("Swipes/"+uid+"/matchPending");
-  storesRef.update(false);
+  const storesRef = rootRef.child("Users/"+uid);
+  storesRef.update({matchPending: false});
 }
 
 function removeFromQueueSingle(uid) {
@@ -224,6 +236,19 @@ function removeFromQueueSingle(uid) {
   const storesRef = rootRef.child("QueueSingle/"+uid);
   storesRef.set(null);
 }
+
+function removeFromOnCancel(uid) {
+  const rootRef = database.ref();
+  const storesRef = rootRef.child("OnCancel/"+uid);
+  storesRef.set(null);
+}
+
+function removeFromOnComplete(uid) {
+  const rootRef = database.ref();
+  const storesRef = rootRef.child("OnComplete/"+uid);
+  storesRef.set(null);
+}
+
 function removeFromMatch(uid) {
   const rootRef = database.ref();
   const storesRef = rootRef.child("Match/"+uid);

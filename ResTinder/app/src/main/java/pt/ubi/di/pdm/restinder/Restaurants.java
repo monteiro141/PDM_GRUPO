@@ -6,16 +6,18 @@ public class Restaurants {
     public String businessStatus;
     public String lat;
     public String lng;
+    public String address;
 
     public Restaurants(){
 
     }
-    public Restaurants(String name, String imgURl, String businessStatus, String lat, String lng){
+    public Restaurants(String name, String imgURl, String businessStatus, String lat, String lng, String Address){
         this.name=name;
         this.imgURl=imgURl;
         this.businessStatus=businessStatus;
         this.lat=lat;
         this.lng=lng;
+        this.address = Address;
     }
 
     public String getName() {
@@ -38,5 +40,7 @@ public class Restaurants {
         return lng;
     }
 
-
+    public String getAddress() {
+        return address;
+    }
 }

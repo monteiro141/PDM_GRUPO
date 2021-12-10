@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -15,6 +16,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -44,6 +47,7 @@ public class Match extends Activity
     public String lng;
     public String partnerOne;
     public String partnerTwo;
+    public String address;
 
     @Override
     protected void onCreate( Bundle savedInstanceState) {
@@ -76,17 +80,22 @@ public class Match extends Activity
         phT.setVisibility(View.INVISIBLE);
 
 
-        reference.child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
+        reference.child(userID).addValueEventListener(new ValueEventListener() {
             @Override
             /**
              * Vai buscar os dados no realtime database do user que inicou sessão
              */
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 userProfile = dataSnapshot.getValue(User.class);
+                if(userProfile != null){
+                    if(!(userProfile.matchPending)){
+                        goToHome();
+                    }
+                }
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(Match.this, "Failed to get user data!", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(Match.this, "Failed to get user data!", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -102,6 +111,7 @@ public class Match extends Activity
                     SS.name = snapshot.child("name").getValue().toString();
                     SS.partnerOne = snapshot.child("partnerOne").getValue().toString();
                     SS.partnerTwo = snapshot.child("partnerTwo").getValue().toString();
+                    SS.address = snapshot.child("address").getValue().toString();
 
                     nameR.setVisibility(View.VISIBLE);
                     locR.setVisibility(View.VISIBLE);
@@ -117,10 +127,11 @@ public class Match extends Activity
 
                     if (SS != null) {
                         if (SS.partnerOne.equals(userID) || SS.partnerTwo.equals(userID)) {
-                            locR.setText(getAddress(Double.parseDouble(SS.lat),Double.parseDouble(SS.lng)));
+
+
                             System.out.println("Lat: " + Double.parseDouble(SS.lat) + "; SEM: " + SS.lat);
                             System.out.println("Lng: " + Double.parseDouble(SS.lng) + "; SEM: " + SS.lng);
-
+                            locR.setText(SS.address);
                             nameR.setText(SS.name);
                             if (SS.partnerOne.equals(userID)) {
                                 partnerReference = FirebaseDatabase.getInstance().getReference("Users");
@@ -158,8 +169,8 @@ public class Match extends Activity
                                     }
                                 });
                             }
-
                         }
+
                     }
                 }
             }
@@ -192,56 +203,58 @@ public class Match extends Activity
 
     }
 
-    public Match(String name, String lat, String lng, String partnerOne, String partnerTwo) {
+    public Match(String name, String lat, String lng, String partnerOne, String partnerTwo, String address)
+    {
         this.name = name;
         this.lat = lat;
         this.lng = lng;
         this.partnerOne = partnerOne;
         this.partnerTwo = partnerTwo;
+        this.address = address;
     }
 
-    /*public String getName() {
-        return name;
+    public void cancelCompleteMatch(View V){
+        if(conclude_cancel.getText().equals("CANCEL")){
+            OnCancel onCancel = new OnCancel(userProfile.state,userID);
+            FirebaseDatabase.getInstance().getReference("OnCancel")
+                    .child(userID)
+                    .setValue(onCancel).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if(task.isSuccessful())
+                    {
+                        Toast.makeText(Match.this,"Match was cancelled!",Toast.LENGTH_LONG).show();
+
+                    }else
+                    {
+                        Toast.makeText(Match.this,"Failed to cancel! Try again!",Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        }else{
+            OnComplete onComplete = new OnComplete(userID);
+            FirebaseDatabase.getInstance().getReference("OnComplete")
+                    .child(userID)
+                    .setValue(onComplete).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if(task.isSuccessful())
+                    {
+                        Toast.makeText(Match.this,"Match was concluded!",Toast.LENGTH_LONG).show();
+
+                    }else
+                    {
+                        Toast.makeText(Match.this,"Failed to conclude! Try again!",Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        }
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getLat() {
-        return lat;
-    }
-
-    public void setLat(String lat) {
-        this.lat = lat;
-    }
-
-    public String getLng() {
-        return lng;
-    }
-
-    public void setLng(String lng) {
-        this.lng = lng;
-    }
-
-    public String getPartnerOne() {
-        return partnerOne;
-    }
-
-    public void setPartnerOne(String partnerOne) {
-        this.partnerOne = partnerOne;
-    }
-
-    public String getPartnerTwo() {
-        return partnerTwo;
-    }
-
-    public void setPartnerTwo(String partnerTwo) {
-        this.partnerTwo = partnerTwo;
-    }*/
-
-    public void cancelMatch(View V){
-
+    public void contactPerson(View v){
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:" + Integer.parseInt(phP.getText().toString())));
+        intent.putExtra("sms_body", "Hi! We have a match on "+nameR.getText().toString()+". When do you wanna meet?");
+        startActivity(intent);
     }
 
     @Override
@@ -284,25 +297,11 @@ public class Match extends Activity
         Toast.makeText(Match.this, "You have a pending match!", Toast.LENGTH_SHORT).show();
     }
 
-    private String getAddress(double LATITUDE, double LONGITUDE) {
-        String strAdd = "";
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-        try {
-            List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
-            if (addresses != null) {
-                Address returnedAddress = addresses.get(0);
-                StringBuilder strReturnedAddress = new StringBuilder("");
-
-                for (int i = 0; i <= returnedAddress.getMaxAddressLineIndex(); i++) {
-                    strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n");
-                }
-                strAdd = strReturnedAddress.toString();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return strAdd;
+    public void goToHome(){
+        super.finish();
+        startActivity(new Intent(this,Home.class));
     }
+
 
 
 

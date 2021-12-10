@@ -8,7 +8,7 @@
     android:background="@drawable/back"
     android:orientation="vertical"
     android:weightSum="10"
-    tools:context=".MainActivity">
+    tools:context=".Match">
 
     <LinearLayout
         android:id="@+id/textView1"
@@ -151,6 +151,7 @@
             android:fontFamily="sans-serif-black"
             android:layout_gravity="center"
             android:text="CONTACT"
+            android:onClick="contactPerson"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/telemovelMatched" />
@@ -161,7 +162,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-black"
             android:layout_gravity="center"
-            android:onClick="cancelMatch"
+            android:onClick="cancelCompleteMatch"
             android:text="CANCEL"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"

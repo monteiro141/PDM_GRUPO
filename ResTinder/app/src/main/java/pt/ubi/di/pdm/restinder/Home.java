@@ -117,7 +117,9 @@ public class Home extends Activity implements LocationListener{
                     jsonObject.getJSONArray("photos").getJSONObject(0).getString("photo_reference"),
                     jsonObject.getString("business_status"),
                     jsonObject.getJSONObject("geometry").getJSONObject("location").getString("lat"),
-                    jsonObject.getJSONObject("geometry").getJSONObject("location").getString("lng")));
+                    jsonObject.getJSONObject("geometry").getJSONObject("location").getString("lng"),
+                    jsonObject.getString("vicinity"))
+                    );
         } catch (JSONException e) {
             e.printStackTrace();
         }
