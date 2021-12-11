@@ -60,6 +60,8 @@ public class Match extends Activity
     boolean mBound;
     boolean loggedOut = false;
     boolean firstNotification;
+    boolean isPaused = false;
+    boolean changeToHome=false;
 
     private ServiceConnection connection;
     private Intent serviceIntent;
@@ -153,8 +155,13 @@ public class Match extends Activity
                 userProfile = dataSnapshot.getValue(User.class);
                 if(userProfile != null){
                     if(!(userProfile.matchPending)){
-                        clearNotificationPref();
-                        goToHome();
+                        if(!isPaused){
+                            clearNotificationPref();
+                            goToHome();
+                        }else{
+                            changeToHome = true;
+                        }
+
                     }
                 }
             }
@@ -187,13 +194,12 @@ public class Match extends Activity
                     contact.setVisibility(View.VISIBLE);
 
                     text.setText("Matched!");
-                    System.out.println("matched");
 
                     conclude_cancel.setText("Conclude Match");
 
                     if (SS.partnerOne != null && SS.partnerTwo != null) {
                         if (SS.partnerOne.equals(userID) || SS.partnerTwo.equals(userID)) {
-
+                            System.out.println("matched on class");
 
                             System.out.println("Lat: " + Double.parseDouble(SS.lat) + "; SEM: " + SS.lat);
                             System.out.println("Lng: " + Double.parseDouble(SS.lng) + "; SEM: " + SS.lng);
@@ -207,6 +213,11 @@ public class Match extends Activity
                                         User partner = snapshot.getValue(User.class);
                                         if (partner != null) {
                                             phP.setText(partner.phone.toString());
+                                            if(!firstNotification){
+                                                firstNotification = true;
+                                                boundedServEditor.putBoolean("firstNotification",true);
+                                                boundedServEditor.commit();
+                                            }
                                         }
 
                                     }
@@ -225,6 +236,11 @@ public class Match extends Activity
                                         User partner = snapshot.getValue(User.class);
                                         if (partner != null) {
                                             phP.setText(partner.phone.toString());
+                                            if(!firstNotification){
+                                                firstNotification = true;
+                                                boundedServEditor.putBoolean("firstNotification",true);
+                                                boundedServEditor.commit();
+                                            }
                                         }
 
                                     }
@@ -235,11 +251,7 @@ public class Match extends Activity
                                     }
                                 });
                             }
-                            if(!firstNotification){
-                                firstNotification = true;
-                                boundedServEditor.putBoolean("firstNotification",true);
-                                boundedServEditor.commit();
-                            }
+
                         }
 
                     }
@@ -388,9 +400,11 @@ public class Match extends Activity
     /**
      * SERVICES
      */
+
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onPause() {
+        super.onPause();
+        isPaused = true;
         if((loggedOut || !userProfile.matchPending)&& mBound){
             boundedServEditor.putBoolean("isBounded",false);
             boundedServEditor.commit();
@@ -407,11 +421,36 @@ public class Match extends Activity
             mBound = true;
             System.out.println("I'm binded.");
         }
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        isPaused = true;
+        if((loggedOut || !userProfile.matchPending)&& mBound){
+            boundedServEditor.putBoolean("isBounded",false);
+            boundedServEditor.commit();
+            serviceIntent = new Intent(getApplicationContext(),RestinderService.class);
+            stopService(serviceIntent);
+            System.out.println("I'm unbinded.");
+            mBound = false;
+        }else if (!loggedOut && userProfile.matchPending && !mBound ){
+            serviceIntent = new Intent(getApplicationContext(),RestinderService.class);
+            serviceIntent.putExtra("userid",userID);
+            startService(serviceIntent);
+            boundedServEditor.putBoolean("isBounded",true);
+            boundedServEditor.commit();
+            mBound = true;
+            System.out.println("I'm binded.");
+        }
+
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        isPaused = true;
         if((loggedOut || !userProfile.matchPending)&& mBound){
             boundedServEditor.putBoolean("isBounded",false);
             boundedServEditor.commit();
@@ -428,12 +467,13 @@ public class Match extends Activity
             mBound = true;
             System.out.println("I'm binded.");
         }
+
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
-
+        isPaused = false;
         if(mBound){
             serviceIntent = new Intent(getApplicationContext(),RestinderService.class);
             serviceIntent.putExtra("userid",userID);
@@ -442,6 +482,9 @@ public class Match extends Activity
             boundedServEditor.commit();
             mBound = false;
             System.out.println("I'm unbinded.");
+        }
+        if(changeToHome){
+            goToHome();
         }
     }
 }

@@ -1,8 +1,14 @@
 package pt.ubi.di.pdm.restinder;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.app.TaskStackBuilder;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -11,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -75,6 +82,14 @@ public class RestinderService extends Service {
                     SS.address = snapshot.child("address").getValue().toString();
                     if (SS.partnerOne != null && SS.partnerTwo != null) {
                         if (SS.partnerOne.equals(userID) || SS.partnerTwo.equals(userID)) {
+
+                            System.out.println("matched on service");
+                            if(true){
+                                firstNotification = true;
+                                boundedServEditor.putBoolean("firstNotification",true);
+                                boundedServEditor.commit();
+                                toastAnywhere();
+                            }
                             if (SS.partnerOne.equals(userID)) {
                                 FirebaseDatabase.getInstance().getReference("Users").child(SS.partnerTwo).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
@@ -103,12 +118,7 @@ public class RestinderService extends Service {
                                     }
                                 });
                             }
-                        if(!firstNotification){
-                            firstNotification = true;
-                            boundedServEditor.putBoolean("firstNotification",true);
-                            boundedServEditor.commit();
-                            toastAnywhere("SIGUIA YEEET");
-                        }
+                            System.out.println("matched on service end");
                         }
 
                     }
@@ -142,13 +152,69 @@ public class RestinderService extends Service {
     public void onDestroy() {
         super.onDestroy();
     }
-    public void toastAnywhere(final String text) {
-        Handler handler = new Handler(Looper.getMainLooper());
+
+    public void toastAnywhere() {
+        /*Handler handler = new Handler(Looper.getMainLooper());
         handler.post(new Runnable() {
             public void run() {
                 Toast.makeText(RestinderService.this.getApplicationContext(), text,
                         Toast.LENGTH_LONG).show();
             }
-        });
+        });*/
+
+        String qqlershit = createNotificationChannel(this);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this,qqlershit);
+        mBuilder.setSmallIcon(R.drawable.arrow_nobg);
+        mBuilder.setContentTitle("Notification Alert, Click Me!");
+        mBuilder.setContentText("Hi, This is Android Notification Detail!");
+
+        Intent resultIntent = new Intent(this, MainActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(MainActivity.class);
+
+        // Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(resultPendingIntent);
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // notificationID allows you to update the notification later on.
+        mNotificationManager.notify(1, mBuilder.build());
+    }
+
+    public String createNotificationChannel(Context context) {
+
+        // NotificationChannels are required for Notifications on O (API 26) and above.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+            // The id of the channel.
+            String channelId = "1";
+
+            // The user-visible name of the channel.
+            CharSequence channelName = "RESTINDER";
+            // The user-visible description of the channel.
+            String channelDescription = "RESTINDER ALERT DERPINO";
+            int channelImportance = NotificationManager.IMPORTANCE_DEFAULT;
+            boolean channelEnableVibrate = true;
+            //            int channelLockscreenVisibility = Notification.;
+
+            // Initializes NotificationChannel.
+            NotificationChannel notificationChannel = new NotificationChannel(channelId, channelName, channelImportance);
+            notificationChannel.setDescription(channelDescription);
+            notificationChannel.enableVibration(channelEnableVibrate);
+            //            notificationChannel.setLockscreenVisibility(channelLockscreenVisibility);
+
+            // Adds NotificationChannel to system. Attempting to create an existing notification
+            // channel with its original values performs no operation, so it's safe to perform the
+            // below sequence.
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            assert notificationManager != null;
+            notificationManager.createNotificationChannel(notificationChannel);
+
+            return channelId;
+        } else {
+            // Returns null for pre-O (26) devices.
+            return null;
+        }
     }
 }

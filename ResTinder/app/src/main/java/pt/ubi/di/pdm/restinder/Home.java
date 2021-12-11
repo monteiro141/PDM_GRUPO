@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
@@ -80,6 +81,11 @@ public class Home extends Activity implements LocationListener{
     private boolean gotUser;
     private int positionCard;
 
+    boolean mBound;
+    boolean firstNotification;
+    private SharedPreferences boundedServ;
+    private SharedPreferences.Editor boundedServEditor;
+
     /*Teste tinder*/
     private CardStackLayoutManager manager;
     private CardStackAdapter adapter;
@@ -92,14 +98,21 @@ public class Home extends Activity implements LocationListener{
         gotUser=false;
 
         restaurantsList = new ArrayList<>();
-
+        boundedServ = getSharedPreferences("boundedServPref",MODE_PRIVATE);
+        boundedServEditor = boundedServ.edit();
+        mBound = boundedServ.getBoolean("isBounded",false);
+        firstNotification = boundedServ.getBoolean("firstNotification",false);
+        if(mBound){
+            mBound = false;
+            boundedServEditor.putBoolean("isBounded",false);
+            boundedServEditor.commit();
+        }
+        if(firstNotification){
+            firstNotification = false;
+            boundedServEditor.putBoolean("firstNotification",false);
+            boundedServEditor.commit();
+        }
         FirebaseInicialized();
-
-
-
-
-
-
         }
 
     @Override
