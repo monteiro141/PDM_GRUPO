@@ -36,6 +36,9 @@
             android:name=".Settings"
             android:exported="true">
         </activity>
+        <service android:name=".RestinderService" android:directBootAware="true">
+
+        </service>
     </application>
 
 </manifest>

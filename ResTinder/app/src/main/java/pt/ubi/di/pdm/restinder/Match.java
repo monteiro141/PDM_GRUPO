@@ -2,12 +2,17 @@ package pt.ubi.di.pdm.restinder;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -26,6 +31,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.List;
@@ -41,6 +47,8 @@ public class Match extends Activity
     private TextView nameR, locR, phP, nameT, locT, phT, text;
     private Button contact, conclude_cancel;
     User userProfile;
+    private SharedPreferences boundedServ;
+    private SharedPreferences.Editor boundedServEditor;
 
     public String name;
     public String lat;
@@ -48,6 +56,14 @@ public class Match extends Activity
     public String partnerOne;
     public String partnerTwo;
     public String address;
+    RestinderService mService;
+    boolean mBound;
+    boolean loggedOut = false;
+    boolean firstNotification;
+
+    private ServiceConnection connection;
+    private Intent serviceIntent;
+
 
     @Override
     protected void onCreate( Bundle savedInstanceState) {
@@ -79,6 +95,54 @@ public class Match extends Activity
         locT.setVisibility(View.INVISIBLE);
         phT.setVisibility(View.INVISIBLE);
 
+        boundedServ = getSharedPreferences("boundedServPref",MODE_PRIVATE);
+        boundedServEditor = boundedServ.edit();
+        mBound = boundedServ.getBoolean("isBounded",false);
+        firstNotification = boundedServ.getBoolean("firstNotification",false);
+
+        if(mBound){
+            serviceIntent = new Intent(getApplicationContext(),RestinderService.class);
+            serviceIntent.putExtra("userid",userID);
+            stopService(serviceIntent);
+            boundedServEditor.putBoolean("isBounded",false);
+            boundedServEditor.commit();
+            mBound = false;
+            System.out.println("I'm unbinded.");
+        }
+
+        /*if (!isServiceRegistered){
+            // defines callbacks for service binding, passed to bindService()
+            connection = new ServiceConnection() {
+                @Override
+                public void onServiceConnected(ComponentName name, IBinder service) {
+                    // we've bound to LocalService, cast the IBinder and get LocalService instance
+                    RestinderService.LocalBinder binder = (RestinderService.LocalBinder) service;
+                    mService = binder.getService();
+                    boundedServEditor.putBoolean("isBounded",true);
+                    boundedServEditor.commit();
+                    mBound = true;
+
+                }
+
+                @Override
+                public void onServiceDisconnected(ComponentName name) {
+                    mBound = false;
+                }
+            };
+            Gson gson = new Gson();
+            String json = gson.toJson(connection);
+            System.out.println("blablabla "+json);
+            System.out.println("blablabla "+connection.toString());
+            boundedServEditor.putString("connection", json);
+            boundedServEditor.putBoolean("isServiceRegistered", true);
+            isServiceRegistered= true;
+            boundedServEditor.commit();
+        }else{
+            Gson gson = new Gson();
+            String json = boundedServ.getString("connection", "");
+            connection = gson.fromJson(json, ServiceConnection.class);
+        }*/
+
 
         reference.child(userID).addValueEventListener(new ValueEventListener() {
             @Override
@@ -89,6 +153,7 @@ public class Match extends Activity
                 userProfile = dataSnapshot.getValue(User.class);
                 if(userProfile != null){
                     if(!(userProfile.matchPending)){
+                        clearNotificationPref();
                         goToHome();
                     }
                 }
@@ -122,10 +187,11 @@ public class Match extends Activity
                     contact.setVisibility(View.VISIBLE);
 
                     text.setText("Matched!");
+                    System.out.println("matched");
 
                     conclude_cancel.setText("Conclude Match");
 
-                    if (SS != null) {
+                    if (SS.partnerOne != null && SS.partnerTwo != null) {
                         if (SS.partnerOne.equals(userID) || SS.partnerTwo.equals(userID)) {
 
 
@@ -168,6 +234,11 @@ public class Match extends Activity
 
                                     }
                                 });
+                            }
+                            if(!firstNotification){
+                                firstNotification = true;
+                                boundedServEditor.putBoolean("firstNotification",true);
+                                boundedServEditor.commit();
                             }
                         }
 
@@ -212,7 +283,13 @@ public class Match extends Activity
         this.partnerTwo = partnerTwo;
         this.address = address;
     }
-
+    public void clearNotificationPref(){
+        boolean firstNotification = boundedServ.getBoolean("firstNotification",false);
+        if(firstNotification){
+            boundedServEditor.putBoolean("firstNotification",false);
+            boundedServEditor.commit();
+        }
+    }
     public void cancelCompleteMatch(View V){
         if(conclude_cancel.getText().equals("CANCEL")){
             OnCancel onCancel = new OnCancel(userProfile.state,userID);
@@ -224,13 +301,16 @@ public class Match extends Activity
                     if(task.isSuccessful())
                     {
                         Toast.makeText(Match.this,"Match was cancelled!",Toast.LENGTH_LONG).show();
+                        clearNotificationPref();
 
                     }else
                     {
                         Toast.makeText(Match.this,"Failed to cancel! Try again!",Toast.LENGTH_LONG).show();
                     }
                 }
+
             });
+
         }else{
             OnComplete onComplete = new OnComplete(userID);
             FirebaseDatabase.getInstance().getReference("OnComplete")
@@ -241,7 +321,7 @@ public class Match extends Activity
                     if(task.isSuccessful())
                     {
                         Toast.makeText(Match.this,"Match was concluded!",Toast.LENGTH_LONG).show();
-
+                        clearNotificationPref();
                     }else
                     {
                         Toast.makeText(Match.this,"Failed to conclude! Try again!",Toast.LENGTH_LONG).show();
@@ -250,6 +330,8 @@ public class Match extends Activity
             });
         }
     }
+
+
 
     public void contactPerson(View v){
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:" + Integer.parseInt(phP.getText().toString())));
@@ -276,6 +358,7 @@ public class Match extends Activity
                 FirebaseAuth.getInstance().signOut();
                 MainActivity.keepLogInEditor.putBoolean("keepLogInState",false);
                 MainActivity.keepLogInEditor.commit();
+                loggedOut = true;
                 finish();
                 startActivity(new Intent(Match.this,MainActivity.class));
             }
@@ -302,7 +385,63 @@ public class Match extends Activity
         startActivity(new Intent(this,Home.class));
     }
 
+    /**
+     * SERVICES
+     */
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if((loggedOut || !userProfile.matchPending)&& mBound){
+            boundedServEditor.putBoolean("isBounded",false);
+            boundedServEditor.commit();
+            serviceIntent = new Intent(getApplicationContext(),RestinderService.class);
+            stopService(serviceIntent);
+            System.out.println("I'm unbinded.");
+            mBound = false;
+        }else if (!loggedOut && userProfile.matchPending && !mBound ){
+            serviceIntent = new Intent(getApplicationContext(),RestinderService.class);
+            serviceIntent.putExtra("userid",userID);
+            startService(serviceIntent);
+            boundedServEditor.putBoolean("isBounded",true);
+            boundedServEditor.commit();
+            mBound = true;
+            System.out.println("I'm binded.");
+        }
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if((loggedOut || !userProfile.matchPending)&& mBound){
+            boundedServEditor.putBoolean("isBounded",false);
+            boundedServEditor.commit();
+            serviceIntent = new Intent(getApplicationContext(),RestinderService.class);
+            stopService(serviceIntent);
+            System.out.println("I'm unbinded.");
+            mBound = false;
+        }else if (!loggedOut && userProfile.matchPending && !mBound ){
+            serviceIntent = new Intent(getApplicationContext(),RestinderService.class);
+            serviceIntent.putExtra("userid",userID);
+            startService(serviceIntent);
+            boundedServEditor.putBoolean("isBounded",true);
+            boundedServEditor.commit();
+            mBound = true;
+            System.out.println("I'm binded.");
+        }
+    }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
 
+        if(mBound){
+            serviceIntent = new Intent(getApplicationContext(),RestinderService.class);
+            serviceIntent.putExtra("userid",userID);
+            stopService(serviceIntent);
+            boundedServEditor.putBoolean("isBounded",false);
+            boundedServEditor.commit();
+            mBound = false;
+            System.out.println("I'm unbinded.");
+        }
+    }
 }
