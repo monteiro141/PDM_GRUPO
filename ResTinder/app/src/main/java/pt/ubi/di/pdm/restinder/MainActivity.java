@@ -63,21 +63,6 @@ public class MainActivity extends Activity {
         mAuth = FirebaseAuth.getInstance();
         setPrefs();
 
-        /*Request permissions*/
-        if(ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(this,Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED){
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
-            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},1);
-            requestPermissions(new String[]{Manifest.permission.INTERNET},1);
-        }
-        /*Finish if permissions not given*/
-        if(ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED ||
-                ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED ||
-                ActivityCompat.checkSelfPermission(this,Manifest.permission.INTERNET) == PackageManager.PERMISSION_DENIED)
-        {
-            finish();
-        }
 
         if(keepLogInState){
             //redirect to home/match/settings with login
@@ -91,6 +76,18 @@ public class MainActivity extends Activity {
             saveLoginBox = findViewById(R.id.saveLoginBox);
             loading = findViewById(R.id.loading);
             loading.setVisibility(View.GONE);
+            /*Request permissions*/
+            if(ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(this,Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{
+                                Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.ACCESS_COARSE_LOCATION,
+                                Manifest.permission.INTERNET
+                        },
+                        1);
+            }
             if(saveLogin){
                 //put email + password + checkbox on view
                 emailET.setText(email);
@@ -102,6 +99,21 @@ public class MainActivity extends Activity {
 
 
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0  && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                } else {
+                    finish();
+                }
+                return;
+            }
+        }
+    }
+
     public void setPrefs()
     {
         /*Pref: email + password + checkbox
@@ -122,6 +134,7 @@ public class MainActivity extends Activity {
     public void registerUser(View v){
         super.finish();
         startActivity(new Intent(this,Register.class));
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
     }
 
     public void keepLogIn() {
@@ -137,6 +150,7 @@ public class MainActivity extends Activity {
                         keepLogInEditor.putBoolean("keepLogInState",false);
                         keepLogInEditor.commit();
                         finish();
+                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     }
                 }
             });
@@ -200,6 +214,7 @@ public class MainActivity extends Activity {
     @Override
     public void onBackPressed() {
         finish();
+        //overridePendingTransition(0, R.anim.slide_down);
     }
 
     public void login(){
@@ -234,12 +249,16 @@ public class MainActivity extends Activity {
         {
             super.finish();
             startActivity(new Intent(this, Settings.class));
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         }else if(userProfile.matchPending){
             super.finish();
             startActivity(new Intent(this, Match.class));
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         }else{
             super.finish();
             startActivity(new Intent(this, Home.class));
+            //overridePendingTransition(0,0);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         }
     }
 

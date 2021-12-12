@@ -150,6 +150,7 @@ public class Register extends Activity implements View.OnClickListener
     public void goToMainActivity(){
         finish();
         startActivity(new Intent(this,MainActivity.class));
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
     }
 
 }

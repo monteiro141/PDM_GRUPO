@@ -84,7 +84,7 @@ public class RestinderService extends Service {
                         if (SS.partnerOne.equals(userID) || SS.partnerTwo.equals(userID)) {
 
                             System.out.println("matched on service");
-                            if(true){
+                            if(!firstNotification){
                                 firstNotification = true;
                                 boundedServEditor.putBoolean("firstNotification",true);
                                 boundedServEditor.commit();
@@ -162,11 +162,12 @@ public class RestinderService extends Service {
             }
         });*/
 
-        String qqlershit = createNotificationChannel(this);
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this,qqlershit);
-        mBuilder.setSmallIcon(R.drawable.arrow_nobg);
-        mBuilder.setContentTitle("Notification Alert, Click Me!");
-        mBuilder.setContentText("Hi, This is Android Notification Detail!");
+        String notificationChannel = createNotificationChannel(this);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this,notificationChannel);
+        mBuilder.setSmallIcon(R.drawable.logotipo_nobg_resize);
+        mBuilder.setContentTitle("You have a match!");
+        mBuilder.setContentText("Click to see more details");
+        mBuilder.setAutoCancel(true);
 
         Intent resultIntent = new Intent(this, MainActivity.class);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);

@@ -80,6 +80,7 @@ public class Home extends Activity implements LocationListener{
     private Swipe personSwipes;
     private boolean gotUser;
     private int positionCard;
+    private int currentRadius = -1;
 
     boolean mBound;
     boolean firstNotification;
@@ -115,13 +116,92 @@ public class Home extends Activity implements LocationListener{
         FirebaseInicialized();
         }
 
-    @Override
-    public void onBackPressed() {
+    private void FirebaseInicialized(){
+        mAuth = FirebaseAuth.getInstance();
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        reference = FirebaseDatabase.getInstance().getReference("Users");
+        userID = user.getUid();
 
+        FirebaseDatabase.getInstance().getReference("Users").child(userID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                userProfile = dataSnapshot.getValue(User.class);
+                if(userProfile != null){
+                    if(userProfile.matchPending){
+                        goToMatch();
+                    }else{
+                        if(currentRadius == -1 || currentRadius != userProfile.radius){
+                            setPlacesAPI();
+                        }
+                    }
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(Home.this, "Failed to get user data!", Toast.LENGTH_LONG).show();
+            }
+
+
+        });
     }
-    public void goToMainActivity(){
-        finish();
-        startActivity(new Intent(Home.this,MainActivity.class));
+
+    public void goToMatch(){
+        super.finish();
+        startActivity(new Intent(this,Match.class));
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    }
+
+    public void setPlacesAPI(){
+        //Get the current location of the user. First we need to verify if the permission is granted.
+        if(ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            LocationManager locationManager= (LocationManager)getSystemService(LOCATION_SERVICE);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,this);
+            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            currentLat=location.getLatitude();
+            currentLong=location.getLongitude();
+        }
+        restaurantsList.clear();
+        currentRadius = userProfile.radius;
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?"+
+                "location="+ currentLat+","+currentLong +
+                "&radius=" + userProfile.radius +
+                "&type=restaurant"+
+                "&sensor=true"+
+                "&key=" + getResources().getString(R.string.googlePlacesKey);
+        JsonObjectRequest data = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        JSONArray jsonArray = null;
+                        try {
+                            jsonArray = response.getJSONArray("results");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            try {
+                                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                                addRestaurant(jsonObject);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        tinderSwipe();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("Json", "Impossível ler");
+            }
+
+        });
+
+        queue.add(data);
     }
 
     public void addRestaurant(JSONObject jsonObject){
@@ -132,32 +212,10 @@ public class Home extends Activity implements LocationListener{
                     jsonObject.getJSONObject("geometry").getJSONObject("location").getString("lat"),
                     jsonObject.getJSONObject("geometry").getJSONObject("location").getString("lng"),
                     jsonObject.getString("vicinity"))
-                    );
+            );
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
-
-
-    @Override
-    public void onLocationChanged(@NonNull Location location) {
-        currentLong = location.getLongitude();
-        currentLat = location.getLatitude();
-    }
-
-    @Override
-    public void onProviderEnabled(@NonNull String provider) {
-        System.out.println("");
-    }
-
-    @Override
-    public void onProviderDisabled(@NonNull String provider) {
-        System.out.println("");
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-        System.out.println("");
     }
 
     public void tinderSwipe(){
@@ -183,9 +241,9 @@ public class Home extends Activity implements LocationListener{
                     //Toast.makeText(Home.this, "Direction Left", Toast.LENGTH_SHORT).show();
                 }
                 // Paginating
-                if (manager.getTopPosition() == adapter.getItemCount() - 5){
+                /*if (manager.getTopPosition() == adapter.getItemCount() - 5){
                     paginate();
-                }
+                }*/
 
                 if(manager.getTopPosition()==restaurantsList.size()){
                     if(personSwipes.restaurantAccepted.size() != 0)
@@ -238,13 +296,60 @@ public class Home extends Activity implements LocationListener{
 
     }
 
-    private void paginate() {
-        List<ItemModel> old = adapter.getItems();
-        List<ItemModel> baru = new ArrayList<>(addList());
-        CardStackCallback callback = new CardStackCallback(old, baru);
-        DiffUtil.DiffResult hasil = DiffUtil.calculateDiff(callback);
-        adapter.setItems(baru);
-        hasil.dispatchUpdatesTo(adapter);
+    public void addToFirebase(){
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        reference = FirebaseDatabase.getInstance().getReference("Swipes");
+        userID = user.getUid();
+
+        FirebaseDatabase.getInstance().getReference("Swipes").child(userID)
+                .setValue(personSwipes).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()){
+                    userProfile.matchPending=true;
+                    FirebaseDatabase.getInstance().getReference("Users").child(userID).setValue(userProfile);
+                }
+            }
+        });
+    }
+
+
+    @Override
+    public void onBackPressed() {
+
+    }
+
+
+
+
+    public void goToMainActivity(){
+        finish();
+        startActivity(new Intent(Home.this,MainActivity.class));
+        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+    }
+
+
+
+
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+        currentLong = location.getLongitude();
+        currentLat = location.getLatitude();
+    }
+
+    @Override
+    public void onProviderEnabled(@NonNull String provider) {
+        System.out.println("");
+    }
+
+    @Override
+    public void onProviderDisabled(@NonNull String provider) {
+        System.out.println("");
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        System.out.println("");
     }
 
     private List<ItemModel> addList() {
@@ -257,102 +362,13 @@ public class Home extends Activity implements LocationListener{
         return items;
     }
 
-    private void FirebaseInicialized(){
-        mAuth = FirebaseAuth.getInstance();
-        user = FirebaseAuth.getInstance().getCurrentUser();
-        reference = FirebaseDatabase.getInstance().getReference("Users");
-        userID = user.getUid();
-
-        reference.child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                userProfile = dataSnapshot.getValue(User.class);
-                if(userProfile.matchPending){
-                    goToMatch();
-                }else
-                    setPlacesAPI();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(Home.this, "Failed to get user data!", Toast.LENGTH_LONG).show();
-            }
 
 
-        });
-    }
 
-    public void setPlacesAPI(){
-        //Get the current location of the user. First we need to verify if the permission is granted.
-        if(ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            LocationManager locationManager= (LocationManager)getSystemService(LOCATION_SERVICE);
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,this);
-            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            currentLat=location.getLatitude();
-            currentLong=location.getLongitude();
-        }
 
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?"+
-                "location="+ currentLat+","+currentLong +
-                "&radius=" + userProfile.radius +
-                "&type=restaurant"+
-                "&sensor=true"+
-                "&key=" + getResources().getString(R.string.googlePlacesKey);
-        JsonObjectRequest data = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        JSONArray jsonArray = null;
-                        try {
-                            jsonArray = response.getJSONArray("results");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            try {
-                                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                                addRestaurant(jsonObject);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        tinderSwipe();
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("Json", "Impossível ler");
-            }
 
-        });
 
-        queue.add(data);
-    }
 
-    public void addToFirebase(){
-        userProfile.matchPending=true;
-        reference.child(userID).setValue(userProfile);
-        user = FirebaseAuth.getInstance().getCurrentUser();
-        reference = FirebaseDatabase.getInstance().getReference("Swipes");
-        userID = user.getUid();
-
-        reference.child(userID)
-                .setValue(personSwipes).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()){
-                            goToMatch();
-                        }
-                    }
-                });
-    }
-
-    public void goToMatch(){
-        super.finish();
-        startActivity(new Intent(this,Match.class));
-    }
 
     public void onLogout(View v){
         AlertDialog alertDialog = new AlertDialog.Builder(this).create();
@@ -379,6 +395,7 @@ public class Home extends Activity implements LocationListener{
 
     public void onSettings(View v){
         startActivity(new Intent(this,Settings.class));
+        overridePendingTransition(0, android.R.anim.fade_out);
     }
 
     public void onMatch(View v){

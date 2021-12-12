@@ -112,39 +112,6 @@ public class Match extends Activity
             System.out.println("I'm unbinded.");
         }
 
-        /*if (!isServiceRegistered){
-            // defines callbacks for service binding, passed to bindService()
-            connection = new ServiceConnection() {
-                @Override
-                public void onServiceConnected(ComponentName name, IBinder service) {
-                    // we've bound to LocalService, cast the IBinder and get LocalService instance
-                    RestinderService.LocalBinder binder = (RestinderService.LocalBinder) service;
-                    mService = binder.getService();
-                    boundedServEditor.putBoolean("isBounded",true);
-                    boundedServEditor.commit();
-                    mBound = true;
-
-                }
-
-                @Override
-                public void onServiceDisconnected(ComponentName name) {
-                    mBound = false;
-                }
-            };
-            Gson gson = new Gson();
-            String json = gson.toJson(connection);
-            System.out.println("blablabla "+json);
-            System.out.println("blablabla "+connection.toString());
-            boundedServEditor.putString("connection", json);
-            boundedServEditor.putBoolean("isServiceRegistered", true);
-            isServiceRegistered= true;
-            boundedServEditor.commit();
-        }else{
-            Gson gson = new Gson();
-            String json = boundedServ.getString("connection", "");
-            connection = gson.fromJson(json, ServiceConnection.class);
-        }*/
-
 
         reference.child(userID).addValueEventListener(new ValueEventListener() {
             @Override
@@ -373,6 +340,7 @@ public class Match extends Activity
                 loggedOut = true;
                 finish();
                 startActivity(new Intent(Match.this,MainActivity.class));
+                overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
             }
         });
 
@@ -386,6 +354,7 @@ public class Match extends Activity
 
     public void onSettings(View v){
         startActivity(new Intent(this, Settings.class));
+        overridePendingTransition(0,0);
     }
 
     public void onHome(View v){
@@ -395,6 +364,7 @@ public class Match extends Activity
     public void goToHome(){
         super.finish();
         startActivity(new Intent(this,Home.class));
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
     /**

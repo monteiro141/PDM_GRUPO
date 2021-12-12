@@ -48,7 +48,7 @@ public class Settings extends Activity
         reference = FirebaseDatabase.getInstance().getReference("Users");
         userID = user.getUid();
 
-        reference.child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
+        reference.child(userID).addValueEventListener(new ValueEventListener() {
             @Override
             /**
              * Vai buscar os dados no realtime database do user que inicou sessão
@@ -129,6 +129,7 @@ public class Settings extends Activity
                         goToHome();
                     }else{
                         finish();
+                        overridePendingTransition(0, 0);
                     }
 
 
@@ -145,6 +146,7 @@ public class Settings extends Activity
     public void onBackPressed() {
         if(!userProfile.firstLogIn){
             super.finish();
+            overridePendingTransition(0, 0);
         }
     }
 
@@ -152,6 +154,7 @@ public class Settings extends Activity
     {
         super.finish();
         startActivity(new Intent(this,Home.class));
+        overridePendingTransition(0, android.R.anim.fade_out);
     }
 
     public void onLogout(View v){
@@ -167,6 +170,7 @@ public class Settings extends Activity
                 MainActivity.keepLogInEditor.commit();
                 finish();
                 startActivity(new Intent(Settings.this,MainActivity.class));
+                overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
             }
         });
 
@@ -184,17 +188,27 @@ public class Settings extends Activity
         }
         else if(userProfile.matchPending){
             super.finish();
-            startActivity(new Intent(this,Match.class));
+            //startActivity(new Intent(this,Match.class));
+            overridePendingTransition(0, 0);
         }else{
             Toast.makeText(Settings.this,"You have no pending match!",Toast.LENGTH_SHORT).show();
         }
     }
 
     public void onHome(View v){
-        if(!userProfile.firstLogIn && !userProfile.matchPending ){
-            super.finish();
+        if(!userProfile.matchPending){
+            if(!userProfile.firstLogIn){
+                super.finish();
+                overridePendingTransition(0, 0);
+            }else{
+                Toast.makeText(Settings.this,"You need to complete the settings!",Toast.LENGTH_SHORT).show();
+            }
         }else{
-            Toast.makeText(Settings.this,"You need to complete the settings!",Toast.LENGTH_SHORT).show();
+            if(!userProfile.firstLogIn){
+                Toast.makeText(Settings.this,"You have a pending match!",Toast.LENGTH_SHORT).show();
+            }else{
+                Toast.makeText(Settings.this,"You need to complete the settings!",Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
