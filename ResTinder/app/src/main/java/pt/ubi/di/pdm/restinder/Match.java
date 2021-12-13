@@ -12,7 +12,9 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -122,10 +124,13 @@ public class Match extends Activity
                 userProfile = dataSnapshot.getValue(User.class);
                 if(userProfile != null){
                     if(!(userProfile.matchPending)){
+                        System.out.println("GOTOHOME");
                         if(!isPaused){
+                            System.out.println("GOTOHOME1");
                             clearNotificationPref();
                             goToHome();
                         }else{
+                            System.out.println("GOTOHOME2");
                             changeToHome = true;
                         }
 
@@ -318,12 +323,27 @@ public class Match extends Activity
         startActivity(intent);
     }
 
+    /**
+     * Esta função verifica se a pessoa carregou 2x no "back"
+     */
+    boolean doubleBackToExitPressedOnce = false;
     @Override
     public void onBackPressed() {
-        /*if(!userProfile.matchPending){
+        if (doubleBackToExitPressedOnce) {
             super.finish();
-            startActivity();
-        }*/
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
     }
 
     public void onLogout(View v){

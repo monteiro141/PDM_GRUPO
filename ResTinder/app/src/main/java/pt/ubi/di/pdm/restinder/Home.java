@@ -79,6 +79,7 @@ public class Home extends Activity implements LocationListener{
 
     private Swipe personSwipes;
     private boolean gotUser;
+    private boolean wentToMatch=false;
     private int positionCard;
     private int currentRadius = -1;
 
@@ -127,8 +128,10 @@ public class Home extends Activity implements LocationListener{
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 userProfile = dataSnapshot.getValue(User.class);
                 if(userProfile != null){
-                    if(userProfile.matchPending){
+                    if(userProfile.matchPending && !wentToMatch){
+                        System.out.println("Gotomatch!");
                         goToMatch();
+                        wentToMatch = true;
                     }else{
                         if(currentRadius == -1 || currentRadius != userProfile.radius){
                             setPlacesAPI();
@@ -173,6 +176,7 @@ public class Home extends Activity implements LocationListener{
                 "&type=restaurant"+
                 "&sensor=true"+
                 "&key=" + getResources().getString(R.string.googlePlacesKey);
+        System.out.println(url);
         JsonObjectRequest data = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -314,9 +318,29 @@ public class Home extends Activity implements LocationListener{
     }
 
 
+
+
+    /**
+     * Esta função verifica se a pessoa carregou 2x no "back"
+     */
+    boolean doubleBackToExitPressedOnce = false;
     @Override
     public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.finish();
+            return;
+        }
 
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
     }
 
 
@@ -401,9 +425,6 @@ public class Home extends Activity implements LocationListener{
     public void onMatch(View v){
         if(!userProfile.matchPending){
             Toast.makeText(Home.this,"You have no pending match!",Toast.LENGTH_SHORT).show();
-        }
-        else{
-            goToMatch();
         }
     }
 
