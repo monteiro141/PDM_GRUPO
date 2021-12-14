@@ -92,11 +92,11 @@ exports.matchPendingTest = functions.region("europe-west1")
         let statePromise = getState("Users/"+userId+"/state");
         statePromise.then(function(resultStatePromise) {
           if (resultStatePromise === "Single") {
-            console.log("Teste single");
+            //console.log("Teste single");
             matchSingle(userId);
           } else {
-            console.log("Teste couple");
-            console.log(String(resultStatePromise));
+            //console.log("Teste couple");
+            //console.log(String(resultStatePromise));
             matchPartner(userId, resultStatePromise);
           }
         });
@@ -112,7 +112,7 @@ function matchPartner(userid, state) {
       let partnerEmailPromise = getState("Users/"+partnerId+"/email");
       partnerEmailPromise.then( function(resultPartnerEmailPromise) {
         if (resultPartnerEmailPromise === state) {
-          console.log("CONSEGUI! -> state e partneremail--->"+String(state)+"|"+String(resultPartnerEmailPromise));
+          //console.log("CONSEGUI! -> state e partneremail--->"+String(state)+"|"+String(resultPartnerEmailPromise));
           let partnerMatchPendingPromise = getState("Users/"+partnerId+"/matchPending");
           partnerMatchPendingPromise.then( function(resultPartnerMatchPendingPromise) {
             if (resultPartnerMatchPendingPromise) {
@@ -123,13 +123,13 @@ function matchPartner(userid, state) {
                   var userJson = resultUserRest.toJSON();
                   var partnerJson = resultPartnerRest.toJSON();
                   Object.keys(userJson).forEach( function( firstResult) {
-                    console.log("Entrou no 1º"+(String(userJson) + "||"+String(firstResult)+"||" + String(userJson[firstResult].name)));
+                    //console.log("Entrou no 1º"+(String(userJson) + "||"+String(firstResult)+"||" + String(userJson[firstResult].name)));
                     Object.keys(partnerJson).forEach( function(secondResult) {
-                      console.log("Entrou no 2º");
+                      //console.log("Entrou no 2º");
                       if (userJson[firstResult].name === partnerJson[secondResult].name &&
                           userJson[firstResult].lat === partnerJson[secondResult].lat &&
                           userJson[firstResult].lng === partnerJson[secondResult].lng) {
-                        console.log("Entrou no 3º");
+                        //console.log("Entrou no 3º");
                         restArray.push(String(userJson[firstResult].name));
                       }
                     });
@@ -138,7 +138,7 @@ function matchPartner(userid, state) {
                   var restRandom = restArray[Math.floor(Math.random()*restArray.length)];
                   Object.keys(userJson).forEach( function(randomPicker) {
                     if (restRandom === userJson[randomPicker].name) {
-                      console.log("Entrou com nome: "+String(restRandom));
+                      //console.log("Entrou com nome: "+String(restRandom));
                       addMatch({partnerOne: userid, partnerTwo: partnerId, name: userJson[randomPicker].name, lat: userJson[randomPicker].lat, lng: userJson[randomPicker].lng, address: userJson[randomPicker].address});
                       return;
                     }
