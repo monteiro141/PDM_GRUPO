@@ -72,7 +72,7 @@ public class Settings extends Activity
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(Settings.this, "Failed to get user data!", Toast.LENGTH_LONG).show();
+                //Toast.makeText(Settings.this, "Failed to get user data!", Toast.LENGTH_LONG).show();
             }
         });
 

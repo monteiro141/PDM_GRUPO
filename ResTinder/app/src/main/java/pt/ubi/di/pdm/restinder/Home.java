@@ -212,8 +212,10 @@ public class Home extends Activity implements LocationListener{
 
                                 }catch (JSONException e){
                                     Log.d("JSONDEBUG",e.toString());
+                                }finally {
+                                    callBack.onSuccess();
                                 }
-                                callBack.onSuccess();
+
 
                             }
                         }, new Response.ErrorListener() {
