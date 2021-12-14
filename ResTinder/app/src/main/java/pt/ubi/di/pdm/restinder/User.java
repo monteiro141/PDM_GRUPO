@@ -11,10 +11,26 @@ public class User implements Serializable
     public Integer radius;
     public Boolean firstLogIn;
     public boolean matchPending;
+
+    /**
+     * Empty constructor for the user
+     */
     public User()
     {
 
     }
+
+    /**
+     * Constructor for the user
+     * @param Email
+     * @param FirstName
+     * @param LastName
+     * @param Birthday
+     * @param State
+     * @param Gender
+     * @param Phone
+     * @param InterestedIn
+     */
     public User(String Email,String FirstName, String LastName, Integer Birthday, String State,String Gender,Integer Phone,String InterestedIn)
     {
         this.email = Email;

@@ -77,7 +77,7 @@ public class MainActivity extends Activity {
             passwordET = findViewById(R.id.passwordFieldID);
             saveLoginBox = findViewById(R.id.saveLoginBox);
             loginbtnId = findViewById(R.id.loginbtnId);
-            loginbtnId.setPressed(false);
+            loginbtnId.setEnabled(true);
             loading = findViewById(R.id.loading);
             loading.setVisibility(View.GONE);
             /*Request permissions*/
@@ -165,7 +165,7 @@ public class MainActivity extends Activity {
     }
 
     public void userLogin(View v) {
-        loginbtnId.setPressed(true);
+        loginbtnId.setEnabled(false);
         email = emailET.getText().toString().trim();
         password = passwordET.getText().toString().trim();
 
@@ -207,12 +207,12 @@ public class MainActivity extends Activity {
                     }else{
                         user.sendEmailVerification();
                         Toast.makeText(MainActivity.this,"Check your email to verify your account!",Toast.LENGTH_LONG).show();
-                        loginbtnId.setPressed(false);
+                        loginbtnId.setEnabled(true);
                     }
 
                 }else {
                     Toast.makeText(MainActivity.this,"Failed to login!",Toast.LENGTH_LONG).show();
-                    loginbtnId.setPressed(false);
+                    loginbtnId.setEnabled(true);
                 }
             }
         });

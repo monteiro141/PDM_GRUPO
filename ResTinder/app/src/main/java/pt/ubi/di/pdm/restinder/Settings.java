@@ -36,6 +36,7 @@ public class Settings extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);
 
+        //Inicialize layout variables
         textnome = findViewById(R.id.textnome);
         textapelido = findViewById(R.id.textapelido);
         textmailparceiro = findViewById(R.id.textmailparceiro);
@@ -43,6 +44,7 @@ public class Settings extends Activity
         textradius = findViewById(R.id.textradius);
         pickDate = findViewById(R.id.pickDate);
 
+        //Get the instance of firebase
         mAuth = FirebaseAuth.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
         reference = FirebaseDatabase.getInstance().getReference("Users");
@@ -51,7 +53,7 @@ public class Settings extends Activity
         reference.child(userID).addValueEventListener(new ValueEventListener() {
             @Override
             /**
-             * Vai buscar os dados no realtime database do user que inicou sessão
+             * Put the settings saved, by the logged-in user, on screen
              */
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 userProfile = dataSnapshot.getValue(User.class);
@@ -76,6 +78,11 @@ public class Settings extends Activity
 
     }
 
+    /**
+     * When the user click "Confirm Changes", the parameters are checked and if there is no error the changes are confirmed.
+     * The user´s setting's are updated in the database
+     * @param v the view
+     */
     public void changeUser(View v)
     {
         String emailP = textmailparceiro.getText().toString().trim();
@@ -142,6 +149,10 @@ public class Settings extends Activity
 
 
     }
+
+    /**
+     * If back is pressed go to the previous activity
+     */
     @Override
     public void onBackPressed() {
         if(!userProfile.firstLogIn){
@@ -150,6 +161,9 @@ public class Settings extends Activity
         }
     }
 
+    /**
+     * Go to Home activity
+     */
     public void goToHome()
     {
         super.finish();
@@ -157,6 +171,11 @@ public class Settings extends Activity
         overridePendingTransition(0, android.R.anim.fade_out);
     }
 
+    /**
+     * Ask the user if he want to log-out. If he want go to the login activity.
+     * if he doesn't want to, he staus in the application.
+     * @param v
+     */
     public void onLogout(View v){
         AlertDialog alertDialog = new AlertDialog.Builder(this).create();
         alertDialog.setTitle("Log Out");
@@ -182,6 +201,10 @@ public class Settings extends Activity
         alertDialog.show();
     }
 
+    /**
+     *
+     * @param v
+     */
     public void onMatch(View v){
         if(userProfile.firstLogIn){
             Toast.makeText(Settings.this,"You need to complete the settings!",Toast.LENGTH_SHORT).show();
