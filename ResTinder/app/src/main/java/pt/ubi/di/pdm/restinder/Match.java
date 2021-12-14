@@ -2,6 +2,9 @@ package pt.ubi.di.pdm.restinder;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -25,6 +28,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -45,6 +49,7 @@ import java.util.Locale;
 
 public class Match extends Activity
 {
+    public static final String CHANNEL_ID = "restinderServiceChannel";
     private FirebaseAuth mAuth;
     private FirebaseUser user;
     private DatabaseReference reference, matchReference, partnerReference;
@@ -75,6 +80,9 @@ public class Match extends Activity
     @Override
     protected void onCreate( Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
         setContentView(R.layout.match);
         mAuth = FirebaseAuth.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -106,7 +114,7 @@ public class Match extends Activity
         boundedServEditor = boundedServ.edit();
         mBound = boundedServ.getBoolean("isBounded",false);
         firstNotification = boundedServ.getBoolean("firstNotification",false);
-
+        createNotificationChannel();
         if(mBound){
             serviceIntent = new Intent(getApplicationContext(),RestinderService.class);
             stopService(serviceIntent);
@@ -254,6 +262,19 @@ public class Match extends Activity
         });
 
 
+    }
+
+    private void createNotificationChannel() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel serviceChannel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "restinderServiceChannel",
+                    NotificationManager.IMPORTANCE_DEFAULT
+
+            );
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(serviceChannel);
+        }
     }
 
     /**
@@ -459,10 +480,10 @@ public class Match extends Activity
             stopService(serviceIntent);
             Log.d("SUPERMETHODS","onStop Im unbinded");
             mBound = false;
-        }else if (!loggedOut && userProfile.matchPending && !mBound ){
+        }else if (!loggedOut && userProfile.matchPending && !mBound && text.getText().toString().equals("Pending!")){
             serviceIntent = new Intent(getApplicationContext(),RestinderService.class);
             serviceIntent.putExtra("userid",userID);
-            startService(serviceIntent);
+            ContextCompat.startForegroundService(this,serviceIntent);
             boundedServEditor.putBoolean("isBounded",true);
             boundedServEditor.commit();
             mBound = true;

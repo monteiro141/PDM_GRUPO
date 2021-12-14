@@ -1,4 +1,7 @@
 package pt.ubi.di.pdm.restinder;
+import static pt.ubi.di.pdm.restinder.Match.CHANNEL_ID;
+
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -57,6 +60,11 @@ public class RestinderService extends Service {
         return binder;
     }
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+    }
+
     /**
      * Function that will be used to start the service. When a match appears in the "Match" table, corresponding to the user,
      * a notification will be displayed to inform him of the match
@@ -67,15 +75,23 @@ public class RestinderService extends Service {
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+        Intent notificationIntent = new Intent(this,MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,
+                0,notificationIntent,0);
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle("Restinder")
+                .setContentText("Finding match...")
+                .setSmallIcon(R.drawable.logotipo_nobg_resize)
+                .setContentIntent(pendingIntent)
+                .build();
+        startForeground(1,notification);
         boundedServ = getSharedPreferences("boundedServPref",MODE_PRIVATE);
         boundedServEditor = boundedServ.edit();
         firstNotification = boundedServ.getBoolean("firstNotification",false);
         userID = intent.getStringExtra("userid");
         FirebaseDatabase.getInstance().getReference("Users").child(userID).addValueEventListener(new ValueEventListener() {
             @Override
-            /**
-             * Vai buscar os dados no realtime database do user que inicou sessão
-             */
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 userProfile = dataSnapshot.getValue(User.class);
             }
@@ -103,7 +119,18 @@ public class RestinderService extends Service {
                                 firstNotification = true;
                                 boundedServEditor.putBoolean("firstNotification",true);
                                 boundedServEditor.commit();
-                                toastAnywhere();
+                                //toastAnywhere();
+                                Intent notificationIntent = new Intent(RestinderService.this,MainActivity.class);
+                                PendingIntent pendingIntent = PendingIntent.getActivity(RestinderService.this,
+                                        0,notificationIntent,0);
+                                Notification notification = new NotificationCompat.Builder(RestinderService.this, CHANNEL_ID)
+                                        .setContentTitle("You have a match!")
+                                        .setContentText("Click to see more details")
+                                        .setSmallIcon(R.drawable.logotipo_nobg_resize)
+                                        .setContentIntent(pendingIntent)
+                                        .build();
+                                startForeground(1,notification);
+
                             }
                             Log.d("SUPERMETHODS","matched on service end");
                         }
@@ -132,7 +159,9 @@ public class RestinderService extends Service {
 
             }
         });
-        return START_REDELIVER_INTENT;
+
+        //stopSelf();
+        return START_NOT_STICKY;
     }
 
     @Override
@@ -140,69 +169,5 @@ public class RestinderService extends Service {
         super.onDestroy();
     }
 
-    /**
-     * The function responsible for the construction of the notification
-     */
-    public void toastAnywhere() {
-        String notificationChannel = createNotificationChannel(this);
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this,notificationChannel);
-        mBuilder.setSmallIcon(R.drawable.logotipo_nobg_resize);
-        mBuilder.setContentTitle("You have a match!");
-        mBuilder.setContentText("Click to see more details");
-        mBuilder.setAutoCancel(true);
 
-        Intent resultIntent = new Intent(this, MainActivity.class);
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addParentStack(MainActivity.class);
-
-        // Adds the Intent that starts the Activity to the top of the stack
-        stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,PendingIntent.FLAG_UPDATE_CURRENT);
-        mBuilder.setContentIntent(resultPendingIntent);
-        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        // notificationID allows you to update the notification later on.
-        mNotificationManager.notify(1, mBuilder.build());
-    }
-
-    /**
-     * Create the notification channel
-     * @param context
-     * @return
-     */
-    public String createNotificationChannel(Context context) {
-
-        // NotificationChannels are required for Notifications on O (API 26) and above.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
-            // The id of the channel.
-            String channelId = "1";
-
-            // The user-visible name of the channel.
-            CharSequence channelName = "RESTINDER";
-            // The user-visible description of the channel.
-            String channelDescription = "RESTINDER ALERT DERPINO";
-            int channelImportance = NotificationManager.IMPORTANCE_DEFAULT;
-            boolean channelEnableVibrate = true;
-            //            int channelLockscreenVisibility = Notification.;
-
-            // Initializes NotificationChannel.
-            NotificationChannel notificationChannel = new NotificationChannel(channelId, channelName, channelImportance);
-            notificationChannel.setDescription(channelDescription);
-            notificationChannel.enableVibration(channelEnableVibrate);
-            //            notificationChannel.setLockscreenVisibility(channelLockscreenVisibility);
-
-            // Adds NotificationChannel to system. Attempting to create an existing notification
-            // channel with its original values performs no operation, so it's safe to perform the
-            // below sequence.
-            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            assert notificationManager != null;
-            notificationManager.createNotificationChannel(notificationChannel);
-
-            return channelId;
-        } else {
-            // Returns null for pre-O (26) devices.
-            return null;
-        }
-    }
 }
