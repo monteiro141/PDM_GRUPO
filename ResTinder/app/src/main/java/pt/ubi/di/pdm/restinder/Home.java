@@ -13,7 +13,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
@@ -129,6 +128,7 @@ public class Home extends Activity implements LocationListener{
                         wentToMatch = true;
                     }else{
                         if(currentRadius == -1 || currentRadius != userProfile.radius){
+                            personSwipes=new Swipe();
                             setPlacesAPI();
                         }
                     }
@@ -184,7 +184,6 @@ public class Home extends Activity implements LocationListener{
 
                                 try {
                                     jsonArray = response.getJSONArray("results");
-                                    SystemClock.sleep(10);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }finally {
@@ -193,7 +192,6 @@ public class Home extends Activity implements LocationListener{
                                     for (i = 0; i < jsonArray.length(); i++) {
                                         try {
                                             jsonObject = jsonArray.getJSONObject(i);
-                                            SystemClock.sleep(10);
                                             addRestaurant(jsonObject);
                                         } catch (JSONException e) {
                                             Log.d("JSONDEBUG","Exception "+e.toString());
@@ -230,62 +228,36 @@ public class Home extends Activity implements LocationListener{
     }
 
     public void setPlacesAPI(){
-        //Get the current location of the user. First we need to verify if the permission is granted.
-        if(ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            LocationManager locationManager= (LocationManager)getSystemService(LOCATION_SERVICE);
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,this);
-            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if(location == null){
-                LocationManager locationManager2= (LocationManager)getSystemService(LOCATION_SERVICE);
-                locationManager2.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0,0,this);
-                Location location2=locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                currentLat=location2.getLatitude();
-                currentLong=location2.getLongitude();
-            }else{
-                currentLat=location.getLatitude();
-                currentLong=location.getLongitude();
+        if(urlwithToken.equals("")){
+            //Get the current location of the user. First we need to verify if the permission is granted.
+            if(ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                    ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                LocationManager locationManager= (LocationManager)getSystemService(LOCATION_SERVICE);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,this);
+                Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                if(location == null){
+                    LocationManager locationManager2= (LocationManager)getSystemService(LOCATION_SERVICE);
+                    locationManager2.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0,0,this);
+                    Location location2=locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                    currentLat=location2.getLatitude();
+                    currentLong=location2.getLongitude();
+                }else{
+                    currentLat=location.getLatitude();
+                    currentLong=location.getLongitude();
+                }
+
             }
 
+            currentRadius = userProfile.radius;
         }
         restaurantsList.clear();
-        currentRadius = userProfile.radius;
-
-
             addAllToQueue(new VolleyCallBack() {
                 @Override
                 public void onSuccess() {
-                    if(!hasNextPageToken){
                         tinderSwipe();
-                        Log.d("JSONDEBUG", "TINDERSWIPE1");
+                        Log.d("JSONDEBUG", "TINDERSWIPE");
                     }
-                    else{
-                        SystemClock.sleep(10);
-                        addAllToQueue(new VolleyCallBack() {
-                            @Override
-                            public void onSuccess() {
-                                if(!hasNextPageToken){
-                                    tinderSwipe();
-                                    Log.d("JSONDEBUG", "TINDERSWIPE2");
-                                }
-                                else{
-                                    SystemClock.sleep(10);
-                                    addAllToQueue(new VolleyCallBack() {
-                                        @Override
-                                        public void onSuccess() {
-                                            Log.d("JSONDEBUG", String.valueOf(restaurantsList.size()));
-                                            tinderSwipe();
-                                        }
-                                    });
-                                }
-                            }
-                        });
-                    }
-                }
             });
-
-
-
     }
 
     /**
@@ -307,7 +279,7 @@ public class Home extends Activity implements LocationListener{
     }
 
     public void tinderSwipe(){
-        personSwipes=new Swipe();
+
         personSwipes.email=userProfile.email;
         personSwipes.state=userProfile.state;
 
@@ -334,8 +306,13 @@ public class Home extends Activity implements LocationListener{
                 }*/
 
                 if(manager.getTopPosition()==restaurantsList.size()){
-                    if(personSwipes.restaurantAccepted.size() != 0)
+                    if(personSwipes.restaurantAccepted.size() != 0 && !hasNextPageToken)
+                    {
                         addToFirebase();
+                    }
+                    else if(personSwipes.restaurantAccepted.size() != 0 && hasNextPageToken){
+                        setPlacesAPI();
+                    }
                     else {
                         Toast.makeText(Home.this,"Change radius in settings",Toast.LENGTH_SHORT).show();
                     }
