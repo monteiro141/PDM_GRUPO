@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -83,42 +84,14 @@ public class RestinderService extends Service {
                     if (SS.partnerOne != null && SS.partnerTwo != null) {
                         if (SS.partnerOne.equals(userID) || SS.partnerTwo.equals(userID)) {
 
-                            System.out.println("matched on service");
+                            Log.d("SUPERMETHODS","matched on service");
                             if(!firstNotification){
                                 firstNotification = true;
                                 boundedServEditor.putBoolean("firstNotification",true);
                                 boundedServEditor.commit();
                                 toastAnywhere();
                             }
-                            if (SS.partnerOne.equals(userID)) {
-                                FirebaseDatabase.getInstance().getReference("Users").child(SS.partnerTwo).addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        User partner = snapshot.getValue(User.class);
-                                        //ADD NOTIFICATION HERE
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-
-                                    }
-                                });
-                            }
-                            else{
-                                FirebaseDatabase.getInstance().getReference("Users").child(SS.partnerOne).addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        User partner = snapshot.getValue(User.class);
-                                        //ADD NOTIFICATION HERE
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-
-                                    }
-                                });
-                            }
-                            System.out.println("matched on service end");
+                            Log.d("SUPERMETHODS","matched on service end");
                         }
 
                     }

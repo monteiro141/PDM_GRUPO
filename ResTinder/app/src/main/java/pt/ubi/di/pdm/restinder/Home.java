@@ -164,7 +164,7 @@ public class Home extends Activity implements LocationListener{
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(Home.this, "Failed to get user data!", Toast.LENGTH_LONG).show();
+                //Toast.makeText(Home.this, "Failed to get user data!", Toast.LENGTH_LONG).show();
             }
 
 
@@ -209,6 +209,7 @@ public class Home extends Activity implements LocationListener{
 
                                 try {
                                     jsonArray = response.getJSONArray("results");
+                                    SystemClock.sleep(10);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }finally {
@@ -217,7 +218,7 @@ public class Home extends Activity implements LocationListener{
                                     for (i = 0; i < jsonArray.length(); i++) {
                                         try {
                                             jsonObject = jsonArray.getJSONObject(i);
-                                            SystemClock.sleep(2);
+                                            SystemClock.sleep(10);
                                             addRestaurant(jsonObject);
                                         } catch (JSONException e) {
                                             Log.d("JSONDEBUG","Exception "+e.toString());
@@ -259,11 +260,16 @@ public class Home extends Activity implements LocationListener{
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,this);
             Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             if(location == null){
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0,0,this);
-                location=locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                LocationManager locationManager2= (LocationManager)getSystemService(LOCATION_SERVICE);
+                locationManager2.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0,0,this);
+                Location location2=locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                currentLat=location2.getLatitude();
+                currentLong=location2.getLongitude();
+            }else{
+                currentLat=location.getLatitude();
+                currentLong=location.getLongitude();
             }
-            currentLat=location.getLatitude();
-            currentLong=location.getLongitude();
+
         }
         restaurantsList.clear();
         currentRadius = userProfile.radius;
@@ -277,7 +283,7 @@ public class Home extends Activity implements LocationListener{
                         Log.d("JSONDEBUG", "TINDERSWIPE1");
                     }
                     else{
-                        SystemClock.sleep(1);
+                        SystemClock.sleep(10);
                         addAllToQueue(new VolleyCallBack() {
                             @Override
                             public void onSuccess() {
@@ -286,7 +292,7 @@ public class Home extends Activity implements LocationListener{
                                     Log.d("JSONDEBUG", "TINDERSWIPE2");
                                 }
                                 else{
-                                    SystemClock.sleep(1);
+                                    SystemClock.sleep(10);
                                     addAllToQueue(new VolleyCallBack() {
                                         @Override
                                         public void onSuccess() {

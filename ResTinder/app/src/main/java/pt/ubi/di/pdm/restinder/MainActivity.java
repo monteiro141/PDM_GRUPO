@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -49,6 +50,7 @@ public class MainActivity extends Activity {
     private SharedPreferences loginPF;
     private SharedPreferences.Editor loginEditor;
     private CheckBox saveLoginBox;
+    private Button loginbtnId;
     private Boolean saveLogin;
     private ProgressBar loading;
     private String email;
@@ -74,6 +76,8 @@ public class MainActivity extends Activity {
             emailET = findViewById(R.id.emailFieldID);
             passwordET = findViewById(R.id.passwordFieldID);
             saveLoginBox = findViewById(R.id.saveLoginBox);
+            loginbtnId = findViewById(R.id.loginbtnId);
+            loginbtnId.setPressed(false);
             loading = findViewById(R.id.loading);
             loading.setVisibility(View.GONE);
             /*Request permissions*/
@@ -117,7 +121,7 @@ public class MainActivity extends Activity {
     public void setPrefs()
     {
         /*Pref: email + password + checkbox
-        * */
+         * */
         loginPF = getSharedPreferences("loginPrefs",MODE_PRIVATE);
         loginEditor = loginPF.edit();
         saveLogin = loginPF.getBoolean("loginState",false);
@@ -126,7 +130,7 @@ public class MainActivity extends Activity {
             password = loginPF.getString("password","");
         }
         /*Pref: keep log in state
-        * */
+         * */
         keepLogIn = getSharedPreferences("keepLogInPref",MODE_PRIVATE);
         keepLogInEditor = keepLogIn.edit();
         keepLogInState = keepLogIn.getBoolean("keepLogInState",false);
@@ -139,26 +143,29 @@ public class MainActivity extends Activity {
 
     public void keepLogIn() {
 
-            mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if(task.isSuccessful()) {
-                        user = FirebaseAuth.getInstance().getCurrentUser();
-                        login();
-                    }else {
-                        Toast.makeText(MainActivity.this,"Failed to login!",Toast.LENGTH_LONG).show();
-                        keepLogInEditor.putBoolean("keepLogInState",false);
-                        keepLogInEditor.commit();
-                        finish();
-                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                    }
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful()) {
+                    Log.d("SUPERMETHODS","keepLogin true");
+                    user = FirebaseAuth.getInstance().getCurrentUser();
+                    login();
+                }else {
+                    Log.d("SUPERMETHODS","keepLogin false");
+                    Toast.makeText(MainActivity.this,"Failed to login!",Toast.LENGTH_LONG).show();
+                    keepLogInEditor.putBoolean("keepLogInState",false);
+                    keepLogInEditor.commit();
+                    finish();
+                    startActivity(new Intent(MainActivity.this, MainActivity.class));
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 }
-            });
+            }
+        });
 
     }
 
     public void userLogin(View v) {
-
+        loginbtnId.setPressed(true);
         email = emailET.getText().toString().trim();
         password = passwordET.getText().toString().trim();
 
@@ -174,7 +181,7 @@ public class MainActivity extends Activity {
             return;
         }
         loading.setVisibility(View.VISIBLE);
-        mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()) {
@@ -183,8 +190,8 @@ public class MainActivity extends Activity {
                         //save credentials of login => if checkbox is checked
                         if(saveLoginBox.isChecked()){
                             loginEditor.putBoolean("loginState",true);
-                            loginEditor.putString("username",emailET.getText().toString());
-                            loginEditor.putString("password",passwordET.getText().toString());
+                            loginEditor.putString("username",emailET.getText().toString().trim());
+                            loginEditor.putString("password",passwordET.getText().toString().trim());
                             //user login
                             keepLogInEditor.putBoolean("keepLogInState",true);
 
@@ -200,10 +207,12 @@ public class MainActivity extends Activity {
                     }else{
                         user.sendEmailVerification();
                         Toast.makeText(MainActivity.this,"Check your email to verify your account!",Toast.LENGTH_LONG).show();
+                        loginbtnId.setPressed(false);
                     }
 
                 }else {
                     Toast.makeText(MainActivity.this,"Failed to login!",Toast.LENGTH_LONG).show();
+                    loginbtnId.setPressed(false);
                 }
             }
         });
@@ -224,7 +233,7 @@ public class MainActivity extends Activity {
         reference = FirebaseDatabase.getInstance().getReference("Users");
         userID = user.getUid();
 
-        reference.child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference("Users").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             /**
              * Vai buscar os dados no realtime database do user que inicou sessão
@@ -238,7 +247,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(MainActivity.this, "Failed to get user data!", Toast.LENGTH_LONG).show();
+                //Toast.makeText(MainActivity.this, "Failed to get user data5!", Toast.LENGTH_LONG).show();
             }
         });
     }

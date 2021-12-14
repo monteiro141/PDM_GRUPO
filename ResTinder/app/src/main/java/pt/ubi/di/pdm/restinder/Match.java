@@ -8,13 +8,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -106,12 +109,11 @@ public class Match extends Activity
 
         if(mBound){
             serviceIntent = new Intent(getApplicationContext(),RestinderService.class);
-            serviceIntent.putExtra("userid",userID);
             stopService(serviceIntent);
             boundedServEditor.putBoolean("isBounded",false);
             boundedServEditor.commit();
             mBound = false;
-            System.out.println("I'm unbinded.");
+            Log.d("SUPERMETHODS","I'm unbinded onCreate");
         }
 
 
@@ -391,10 +393,11 @@ public class Match extends Activity
      * SERVICES
      */
 
-    @Override
+    /*@Override
     protected void onPause() {
-        super.onPause();
+        Log.d("SUPERMETHODS","onPauseCalled");
         isPaused = true;
+        mBound = boundedServ.getBoolean("isBounded",false);
         if((loggedOut || !userProfile.matchPending)&& mBound){
             boundedServEditor.putBoolean("isBounded",false);
             boundedServEditor.commit();
@@ -411,19 +414,21 @@ public class Match extends Activity
             mBound = true;
             System.out.println("I'm binded.");
         }
-
-    }
+        super.onPause();
+    }*/
 
     @Override
     protected void onStop() {
         super.onStop();
+        Log.d("SUPERMETHODS","onStopCalled");
         isPaused = true;
+        mBound = boundedServ.getBoolean("isBounded",false);
         if((loggedOut || !userProfile.matchPending)&& mBound){
             boundedServEditor.putBoolean("isBounded",false);
             boundedServEditor.commit();
             serviceIntent = new Intent(getApplicationContext(),RestinderService.class);
             stopService(serviceIntent);
-            System.out.println("I'm unbinded.");
+            Log.d("SUPERMETHODS","onStop Im unbinded");
             mBound = false;
         }else if (!loggedOut && userProfile.matchPending && !mBound ){
             serviceIntent = new Intent(getApplicationContext(),RestinderService.class);
@@ -432,33 +437,36 @@ public class Match extends Activity
             boundedServEditor.putBoolean("isBounded",true);
             boundedServEditor.commit();
             mBound = true;
-            System.out.println("I'm binded.");
+            Log.d("SUPERMETHODS","onStop Im binded");
         }
+        Log.d("SUPERMETHODS","onStopCalledEnd");
 
     }
 
-    @Override
+    /*@Override
     protected void onDestroy() {
-        super.onDestroy();
+        Log.d("SUPERMETHODS","onDestroyCalled");
         isPaused = true;
         if((loggedOut || !userProfile.matchPending)&& mBound){
+            Log.d("SUPERMETHODS","I'm unbinded destroyCalled");
             boundedServEditor.putBoolean("isBounded",false);
             boundedServEditor.commit();
             serviceIntent = new Intent(getApplicationContext(),RestinderService.class);
             stopService(serviceIntent);
-            System.out.println("I'm unbinded.");
+
             mBound = false;
         }else if (!loggedOut && userProfile.matchPending && !mBound ){
+            Log.d("SUPERMETHODS","I'm binded destroyCalled");
             serviceIntent = new Intent(getApplicationContext(),RestinderService.class);
             serviceIntent.putExtra("userid",userID);
             startService(serviceIntent);
             boundedServEditor.putBoolean("isBounded",true);
             boundedServEditor.commit();
             mBound = true;
-            System.out.println("I'm binded.");
         }
-
-    }
+        Log.d("SUPERMETHODS","onDestroyCalledEnd");
+        super.onDestroy();
+    }*/
 
     @Override
     protected void onRestart() {
