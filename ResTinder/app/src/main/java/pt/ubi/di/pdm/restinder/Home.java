@@ -15,6 +15,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
@@ -36,6 +37,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.common.util.IOUtils;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -48,6 +50,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.squareup.picasso.Picasso;
 import com.yuyakaido.android.cardstackview.CardStackLayoutManager;
 import com.yuyakaido.android.cardstackview.CardStackListener;
@@ -60,10 +65,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import javax.net.ssl.HttpsURLConnection;
 
 public class Home extends Activity implements LocationListener{
     private ImageButton logout;
@@ -82,6 +97,11 @@ public class Home extends Activity implements LocationListener{
     private boolean wentToMatch=false;
     private int positionCard;
     private int currentRadius = -1;
+    private String nextPageToken;
+    private boolean hasNextPageToken=false;
+    String urlwithToken="";
+    String url;
+    RequestQueue queue;
 
     boolean mBound;
     boolean firstNotification;
@@ -115,7 +135,7 @@ public class Home extends Activity implements LocationListener{
             boundedServEditor.commit();
         }
         FirebaseInicialized();
-        }
+    }
 
     private void FirebaseInicialized(){
         mAuth = FirebaseAuth.getInstance();
@@ -157,6 +177,80 @@ public class Home extends Activity implements LocationListener{
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
+
+    public interface VolleyCallBack {
+        void onSuccess();
+    }
+
+    public void addAllToQueue(final VolleyCallBack callBack){
+        url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?"+
+                "location="+ currentLat+","+currentLong +
+                "&radius=" + userProfile.radius +
+                "&type=restaurant"+
+                "&sensor=true"+
+                "&key=" + getResources().getString(R.string.googlePlacesKey);
+
+        if(urlwithToken.equals("")){
+            urlwithToken="https://maps.googleapis.com/maps/api/place/nearbysearch/json?"+
+                    "location="+ currentLat+","+currentLong +
+                    "&radius=" + userProfile.radius +
+                    "&type=restaurant"+
+                    "&sensor=true"+
+                    "&key=" + getResources().getString(R.string.googlePlacesKey);
+        }else {
+            urlwithToken = url + "&pagetoken="+nextPageToken;
+        }
+        queue = Volley.newRequestQueue(getApplicationContext());
+        queue.add(new JsonObjectRequest(Request.Method.GET, urlwithToken, null,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                JSONArray jsonArray = null;
+
+                                try {
+                                    jsonArray = response.getJSONArray("results");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }finally {
+                                    int i;
+                                    JSONObject jsonObject;
+                                    for (i = 0; i < jsonArray.length(); i++) {
+                                        try {
+                                            jsonObject = jsonArray.getJSONObject(i);
+                                            SystemClock.sleep(2);
+                                            addRestaurant(jsonObject);
+                                        } catch (JSONException e) {
+                                            Log.d("JSONDEBUG","Exception "+e.toString());
+                                        }
+                                    }
+                                }
+                                try{
+                                    if(response.has("next_page_token")){
+                                        nextPageToken = response.getString("next_page_token");
+                                        hasNextPageToken = true;
+                                        urlwithToken = url + "&pagetoken="+nextPageToken;
+
+                                    }else{
+                                        hasNextPageToken = false;
+                                    }
+
+                                }catch (JSONException e){
+                                    Log.d("JSONDEBUG",e.toString());
+                                }
+                                callBack.onSuccess();
+
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("Json", "Impossível ler");
+                    }
+
+                })
+        );
+
+    }
+
     public void setPlacesAPI(){
         //Get the current location of the user. First we need to verify if the permission is granted.
         if(ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
@@ -169,45 +263,48 @@ public class Home extends Activity implements LocationListener{
         }
         restaurantsList.clear();
         currentRadius = userProfile.radius;
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?"+
-                "location="+ currentLat+","+currentLong +
-                "&radius=" + userProfile.radius +
-                "&type=restaurant"+
-                "&sensor=true"+
-                "&key=" + getResources().getString(R.string.googlePlacesKey);
-        System.out.println(url);
-        JsonObjectRequest data = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        JSONArray jsonArray = null;
-                        try {
-                            jsonArray = response.getJSONArray("results");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            try {
-                                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                                addRestaurant(jsonObject);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
+
+
+            addAllToQueue(new VolleyCallBack() {
+                @Override
+                public void onSuccess() {
+                    if(!hasNextPageToken){
                         tinderSwipe();
+                        Log.d("JSONDEBUG", "TINDERSWIPE1");
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("Json", "Impossível ler");
-            }
+                    else{
+                        SystemClock.sleep(1);
+                        addAllToQueue(new VolleyCallBack() {
+                            @Override
+                            public void onSuccess() {
+                                if(!hasNextPageToken){
+                                    tinderSwipe();
+                                    Log.d("JSONDEBUG", "TINDERSWIPE2");
+                                }
+                                else{
+                                    SystemClock.sleep(1);
+                                    addAllToQueue(new VolleyCallBack() {
+                                        @Override
+                                        public void onSuccess() {
+                                            Log.d("JSONDEBUG", String.valueOf(restaurantsList.size()));
+                                            tinderSwipe();
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                }
+            });
 
-        });
 
-        queue.add(data);
+
     }
 
+    /**
+     * If there is no json atribute "photos" or "photo_reference" the restaurant is discarded
+     * @param jsonObject
+     */
     public void addRestaurant(JSONObject jsonObject){
         try {
             restaurantsList.add(new Restaurants(jsonObject.getString("name"),
