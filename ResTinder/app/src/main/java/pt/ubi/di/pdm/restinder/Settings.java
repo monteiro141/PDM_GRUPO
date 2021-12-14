@@ -172,8 +172,8 @@ public class Settings extends Activity
     }
 
     /**
-     * Ask the user if he want to log-out. If he want go to the login activity.
-     * if he doesn't want to, he staus in the application.
+     * Ask the user if he want to log-out. If he wants, he goes to the login activity.
+     * if he doesn't want to, he stays in the application.
      * @param v
      */
     public void onLogout(View v){
@@ -202,7 +202,10 @@ public class Settings extends Activity
     }
 
     /**
-     *
+     * When the user click on the heart:
+     * if it is the first login, a message appears for him to complete the settings
+     * if the user has match pending, the user go to the match activity
+     * In another cases, a message appear saying that you don´t hava pending match
      * @param v
      */
     public void onMatch(View v){
@@ -218,6 +221,10 @@ public class Settings extends Activity
         }
     }
 
+    /**
+     * Will redirect the user for the home activity or not depending if the user has a match pending and if it is his first login
+     * @param v
+     */
     public void onHome(View v){
         if(!userProfile.matchPending){
             if(!userProfile.firstLogIn){

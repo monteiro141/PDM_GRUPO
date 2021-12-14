@@ -37,8 +37,9 @@ public class RestinderService extends Service {
     private SharedPreferences boundedServ;
     private SharedPreferences.Editor boundedServEditor;
 
-    // class used for the client binder. because we know this service always
-    // runs in the same process as its clients, we don't need to deal with IPC
+    /**
+     * Class for the client binder.
+     */
     public class LocalBinder extends Binder {
         RestinderService getService () {
             // return this instance of LocalService so clients can call public methods
@@ -46,11 +47,24 @@ public class RestinderService extends Service {
         }
     }
 
+    /**
+     *
+     * @param intent
+     * @return
+     */
     @Override
     public IBinder onBind (Intent intent) {
         return binder;
     }
 
+    /**
+     * Function that will be used to start the service. When a match appears in the "Match" table, corresponding to the user,
+     * a notification will be displayed to inform him of the match
+     * @param intent
+     * @param flags
+     * @param startId
+     * @return
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         boundedServ = getSharedPreferences("boundedServPref",MODE_PRIVATE);
@@ -126,15 +140,10 @@ public class RestinderService extends Service {
         super.onDestroy();
     }
 
+    /**
+     * The function responsible for the construction of the notification
+     */
     public void toastAnywhere() {
-        /*Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(new Runnable() {
-            public void run() {
-                Toast.makeText(RestinderService.this.getApplicationContext(), text,
-                        Toast.LENGTH_LONG).show();
-            }
-        });*/
-
         String notificationChannel = createNotificationChannel(this);
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this,notificationChannel);
         mBuilder.setSmallIcon(R.drawable.logotipo_nobg_resize);
@@ -156,6 +165,11 @@ public class RestinderService extends Service {
         mNotificationManager.notify(1, mBuilder.build());
     }
 
+    /**
+     * Create the notification channel
+     * @param context
+     * @return
+     */
     public String createNotificationChannel(Context context) {
 
         // NotificationChannels are required for Notifications on O (API 26) and above.

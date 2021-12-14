@@ -256,10 +256,22 @@ public class Match extends Activity
 
     }
 
+    /**
+     * Empty constructor for the match
+     */
     public Match(){
 
     }
 
+    /**
+     * Constructor for the match
+     * @param name name of the restaurant
+     * @param lat latitude of the restaurant
+     * @param lng longitude of the restaurant
+     * @param partnerOne partner one
+     * @param partnerTwo partner two
+     * @param address address of the restaurant
+     */
     public Match(String name, String lat, String lng, String partnerOne, String partnerTwo, String address)
     {
         this.name = name;
@@ -269,6 +281,8 @@ public class Match extends Activity
         this.partnerTwo = partnerTwo;
         this.address = address;
     }
+
+
     public void clearNotificationPref(){
         boolean firstNotification = boundedServ.getBoolean("firstNotification",false);
         if(firstNotification){
@@ -276,6 +290,11 @@ public class Match extends Activity
             boundedServEditor.commit();
         }
     }
+
+    /**
+     * if the user click Cancel or "Conclude Match", the pending match or the actual match will be cancel/concluded and a message of sucess or insucess will appear.
+     * @param V
+     */
     public void cancelCompleteMatch(View V){
         if(conclude_cancel.getText().equals("CANCEL")){
             OnCancel onCancel = new OnCancel(userProfile.state,userID);
@@ -318,7 +337,11 @@ public class Match extends Activity
     }
 
 
-
+    /**
+     * if the user select the option "Contact", he will be ask to choose one menssage app from his phone and then he will be redirect to that app.
+     * A pre-menssage is shown on the app.
+     * @param v
+     */
     public void contactPerson(View v){
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:" + Integer.parseInt(phP.getText().toString())));
         intent.putExtra("sms_body", "Hi! We have a match on "+nameR.getText().toString()+". When do you wanna meet?");
@@ -326,6 +349,7 @@ public class Match extends Activity
     }
 
     /**
+     * This function verify if the back is pressed 2 times. if it is, the user is redirect to the home of the operating system
      * Esta função verifica se a pessoa carregou 2x no "back"
      */
     boolean doubleBackToExitPressedOnce = false;
@@ -348,6 +372,11 @@ public class Match extends Activity
         }, 2000);
     }
 
+    /**
+     * Ask the user if he want to log-out. If he wants, he goes to the login activity.
+     * if he doesn't want to, he stays in the application.
+     * @param v
+     */
     public void onLogout(View v){
         AlertDialog alertDialog = new AlertDialog.Builder(this).create();
         alertDialog.setTitle("Log Out");

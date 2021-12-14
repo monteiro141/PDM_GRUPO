@@ -52,6 +52,10 @@ public class Register extends Activity implements View.OnClickListener
         preferencesRegister = findViewById(R.id.preferencesRegister);
     }
 
+    /**
+     * Registers a new user, checking that valid values have been entered
+     * @param v
+     */
     public void registerUser(View v)
     {
         String email = emailRegister.getText().toString().trim();// editTextEmail.getText().toString().trim();
@@ -142,11 +146,19 @@ public class Register extends Activity implements View.OnClickListener
     public void onClick(View view) {
 
     }
+
+    /**
+     * If back is pressed go to the login activity
+     */
     @Override
     public void onBackPressed() {
         FirebaseAuth.getInstance().signOut();
         goToMainActivity();
     }
+
+    /**
+     * Go to the main activity
+     */
     public void goToMainActivity(){
         finish();
         startActivity(new Intent(this,MainActivity.class));

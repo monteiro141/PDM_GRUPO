@@ -1,5 +1,8 @@
 package pt.ubi.di.pdm.restinder;
 
+/**
+ * This class is used to send a pendingMatch to the realtime database that will be cancelled later
+ */
 public class OnCancel {
     private String state,userid;
 
