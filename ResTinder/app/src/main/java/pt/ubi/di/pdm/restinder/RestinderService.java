@@ -98,6 +98,7 @@ public class RestinderService extends Service {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 //Toast.makeText(Match.this, "Failed to get user data!", Toast.LENGTH_SHORT).show();
+                stopSelf();
             }
         });
         FirebaseDatabase.getInstance().getReference("Match").addChildEventListener(new ChildEventListener() {

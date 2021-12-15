@@ -269,9 +269,10 @@ public class Match extends Activity
             NotificationChannel serviceChannel = new NotificationChannel(
                     CHANNEL_ID,
                     "restinderServiceChannel",
-                    NotificationManager.IMPORTANCE_DEFAULT
+                    NotificationManager.IMPORTANCE_NONE
 
             );
+            serviceChannel.setSound(null,null);
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(serviceChannel);
         }
