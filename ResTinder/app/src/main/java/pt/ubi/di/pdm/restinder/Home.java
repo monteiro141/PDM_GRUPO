@@ -111,6 +111,11 @@ public class Home extends Activity implements LocationListener{
         FirebaseInicialized();
     }
 
+    /**
+     * Inicialize the firebase with the current user instance
+     * If the data changes and the user has match pending, he will be redirected for the match activity
+     * If the data changes and the user doesn't have match pending, the cards for the swipes will be displayed
+     */
     private void FirebaseInicialized(){
         mAuth = FirebaseAuth.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -123,7 +128,6 @@ public class Home extends Activity implements LocationListener{
                 userProfile = dataSnapshot.getValue(User.class);
                 if(userProfile != null){
                     if(userProfile.matchPending && !wentToMatch){
-                        System.out.println("Gotomatch!");
                         goToMatch();
                         wentToMatch = true;
                     }else{
@@ -146,17 +150,26 @@ public class Home extends Activity implements LocationListener{
         });
     }
 
+    /**
+     * Go to the match activity
+     */
     public void goToMatch(){
         super.finish();
         startActivity(new Intent(this,Match.class));
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
-
+    /**
+     * Used to get the onsucess callback of VollyCallBAck
+     */
     public interface VolleyCallBack {
         void onSuccess();
     }
 
+    /**
+     * Add a page of the Places API to the restaurantslist.
+     * @param callBack
+     */
     public void addAllToQueue(final VolleyCallBack callBack){
         url="https://maps.googleapis.com/maps/api/place/nearbysearch/json?"+
                 "location="+ currentLat+","+currentLong +
@@ -166,6 +179,7 @@ public class Home extends Activity implements LocationListener{
                 "&key=" + getResources().getString(R.string.googlePlacesKey);
 
         if(urlwithToken.equals("")){
+            //The inicial url
             urlwithToken="https://maps.googleapis.com/maps/api/place/nearbysearch/json?"+
                     "location="+ currentLat+","+currentLong +
                     "&radius=" + userProfile.radius +
@@ -173,6 +187,7 @@ public class Home extends Activity implements LocationListener{
                     "&sensor=true"+
                     "&key=" + getResources().getString(R.string.googlePlacesKey);
         }else {
+            //The url to open another other pages provided by Places API
             urlwithToken = url + "&pagetoken="+nextPageToken;
         }
         queue = Volley.newRequestQueue(getApplicationContext());
@@ -219,7 +234,7 @@ public class Home extends Activity implements LocationListener{
                         }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.e("Json", "Impossível ler");
+                        Log.d("Json", "Impossible to read");
                     }
 
                 })
@@ -227,6 +242,9 @@ public class Home extends Activity implements LocationListener{
 
     }
 
+    /**
+     * Check if the user gave permissions to the app. Then the program will get the current longitude an latitude to be used to get the restaurants near the user (with the radius defined by the user).
+     */
     public void setPlacesAPI(){
         if(urlwithToken.equals("")){
             //Get the current location of the user. First we need to verify if the permission is granted.
@@ -250,6 +268,7 @@ public class Home extends Activity implements LocationListener{
 
             currentRadius = userProfile.radius;
         }
+        //clear the restaurants list in order to get more restaurants places, if possible
         restaurantsList.clear();
             addAllToQueue(new VolleyCallBack() {
                 @Override
@@ -278,6 +297,9 @@ public class Home extends Activity implements LocationListener{
         }
     }
 
+    /**
+     * Show the cards to the user. if he swipes left the restaurant is rejected. if he swipes right the restaurant is accepted and saved on a list
+     */
     public void tinderSwipe(){
 
         personSwipes.email=userProfile.email;
@@ -295,17 +317,15 @@ public class Home extends Activity implements LocationListener{
                 //Log.d("TAG", "onCardSwiped: p=" + manager.getTopPosition() + " d=" + direction);
                 if (direction == Direction.Right){
                     personSwipes.addElementToAccepted(restaurantsList.get(positionCard));
-                    //Toast.makeText(Home.this, "Direction Right", Toast.LENGTH_SHORT).show();
                 }
                 if (direction == Direction.Left){
-                    //Toast.makeText(Home.this, "Direction Left", Toast.LENGTH_SHORT).show();
                 }
-                // Paginating
-                /*if (manager.getTopPosition() == adapter.getItemCount() - 5){
-                    paginate();
-                }*/
 
+                //The user has done all the swipes
                 if(manager.getTopPosition()==restaurantsList.size()){
+                    //if there is no page token the restaurants accepted list is added to firebase.
+                    //if there is a page token, the program will display more swipes with more restaurants to the user
+                    //if none of the above has occurred, the program tell the user to change radius on the settings
                     if(personSwipes.restaurantAccepted.size() != 0 && !hasNextPageToken)
                     {
                         addToFirebase();
@@ -361,6 +381,9 @@ public class Home extends Activity implements LocationListener{
 
     }
 
+    /**
+     * Save the user's swipe in the firebase
+     */
     public void addToFirebase(){
         user = FirebaseAuth.getInstance().getCurrentUser();
         reference = FirebaseDatabase.getInstance().getReference("Swipes");
@@ -382,7 +405,8 @@ public class Home extends Activity implements LocationListener{
 
 
     /**
-     * Esta função verifica se a pessoa carregou 2x no "back"
+     * This function verify if the user click 2 times in "back"
+     * if he clicks two times, the app will close
      */
     boolean doubleBackToExitPressedOnce = false;
     @Override
@@ -405,8 +429,9 @@ public class Home extends Activity implements LocationListener{
     }
 
 
-
-
+    /**
+     * The user is redirected to the home activity
+     */
     public void goToMainActivity(){
         finish();
         startActivity(new Intent(Home.this,MainActivity.class));
@@ -415,28 +440,22 @@ public class Home extends Activity implements LocationListener{
 
 
 
+    @Override
+    public void onLocationChanged(@NonNull Location location) {}
 
     @Override
-    public void onLocationChanged(@NonNull Location location) {
-        currentLong = location.getLongitude();
-        currentLat = location.getLatitude();
-    }
+    public void onProviderEnabled(@NonNull String provider) {}
 
     @Override
-    public void onProviderEnabled(@NonNull String provider) {
-        System.out.println("");
-    }
+    public void onProviderDisabled(@NonNull String provider) {}
 
     @Override
-    public void onProviderDisabled(@NonNull String provider) {
-        System.out.println("");
-    }
+    public void onStatusChanged(String provider, int status, Bundle extras) {}
 
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-        System.out.println("");
-    }
-
+    /**
+     * Add all the restaurants to a list to be used on the cards swipe
+     * @return
+     */
     private List<ItemModel> addList() {
         List<ItemModel> items = new ArrayList<>();
         for (Restaurants i: restaurantsList) {
@@ -448,13 +467,11 @@ public class Home extends Activity implements LocationListener{
     }
 
 
-
-
-
-
-
-
-
+    /**
+     * Ask the user if he want to log-out. If he wants, he goes to the login activity.
+     * if he doesn't want to, he stays in the application.
+     * @param v
+     */
     public void onLogout(View v){
         AlertDialog alertDialog = new AlertDialog.Builder(this).create();
         alertDialog.setTitle("Log Out");
@@ -478,21 +495,34 @@ public class Home extends Activity implements LocationListener{
         alertDialog.show();
     }
 
+    /**
+     * if click settings icon the user go to the settings activity
+     * @param v
+     */
     public void onSettings(View v){
         startActivity(new Intent(this,Settings.class));
         overridePendingTransition(0, android.R.anim.fade_out);
     }
 
+    /**
+     * if the user click match, the system will show a message.
+     * @param v
+     */
     public void onMatch(View v){
         if(!userProfile.matchPending){
             Toast.makeText(Home.this,"You have no pending match!",Toast.LENGTH_SHORT).show();
         }
     }
 
+
+    /**
+     * if the user click Home, the swipes will be reset
+     * @param V
+     */
     public void onHome(View V){
-        /*super.finish();
-        startActivity(new Intent(this,Home.class));
-        overridePendingTransition(0,0);*/
-        tinderSwipe();
+        nextPageToken="";
+        personSwipes=new Swipe();
+        setPlacesAPI();
+
     }
 }

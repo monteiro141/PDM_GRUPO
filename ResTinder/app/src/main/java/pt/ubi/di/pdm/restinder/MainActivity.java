@@ -7,9 +7,11 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -52,7 +54,6 @@ public class MainActivity extends Activity {
     private CheckBox saveLoginBox;
     private Button loginbtnId;
     private Boolean saveLogin;
-    private ProgressBar loading;
     private String email;
     private String password;
 
@@ -70,6 +71,7 @@ public class MainActivity extends Activity {
             //redirect to home/match/settings with login
             /*create a different xml for this action*/
             setContentView(R.layout.loading);
+            checkifGPSisEnnable();
             keepLogIn();
         }else{
             setContentView(R.layout.activity_main);
@@ -78,8 +80,6 @@ public class MainActivity extends Activity {
             saveLoginBox = findViewById(R.id.saveLoginBox);
             loginbtnId = findViewById(R.id.loginbtnId);
             loginbtnId.setEnabled(true);
-            loading = findViewById(R.id.loading);
-            loading.setVisibility(View.GONE);
             /*Request permissions*/
             if(ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
                     ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
@@ -92,24 +92,42 @@ public class MainActivity extends Activity {
                         },
                         1);
             }
-            if(saveLogin){
-                //put email + password + checkbox on view
-                emailET.setText(email);
-                passwordET.setText(password);
-                saveLoginBox.setChecked(saveLogin);
+            checkifGPSisEnnable();
 
-            }
+
+        if(saveLogin){
+            //put email + password + checkbox on view
+            emailET.setText(email);
+            passwordET.setText(password);
+            saveLoginBox.setChecked(saveLogin);
+            checkifGPSisEnnable();
         }
+    }
 
 
     }
 
+    public void checkifGPSisEnnable(){
+        LocationManager manager2 =(LocationManager) getSystemService(LOCATION_SERVICE);
+        if(!manager2.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            Toast.makeText(MainActivity.this,"You need to activate the location!",Toast.LENGTH_LONG).show();
+            finish();
+
+        }
+    }
+    /**
+     * Check if the user accept the permission. if he didn't accept the app is closed.
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case 1: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0  && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
                 } else {
                     finish();
                 }
@@ -118,6 +136,9 @@ public class MainActivity extends Activity {
         }
     }
 
+    /**
+     * Set the login and keep login preferences
+     */
     public void setPrefs()
     {
         /*Pref: email + password + checkbox
@@ -135,12 +156,20 @@ public class MainActivity extends Activity {
         keepLogInEditor = keepLogIn.edit();
         keepLogInState = keepLogIn.getBoolean("keepLogInState",false);
     }
+
+    /**
+     * if the user click register, he will be redirect to the register activity
+     * @param v
+     */
     public void registerUser(View v){
         super.finish();
         startActivity(new Intent(this,Register.class));
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
     }
 
+    /**
+     * if the user has keeplogin active, he will be redirected for the home page or the match depending on the match pending.
+     */
     public void keepLogIn() {
 
         FirebaseAuth.getInstance().signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -164,6 +193,10 @@ public class MainActivity extends Activity {
 
     }
 
+    /**
+     * if the user click's "Login", the system will check if the credencials are valid and if they are, he will be redirect to the home page or the match page depending on the match pending value
+     * @param v
+     */
     public void userLogin(View v) {
         loginbtnId.setEnabled(false);
         email = emailET.getText().toString().trim();
@@ -180,7 +213,6 @@ public class MainActivity extends Activity {
             passwordET.requestFocus();
             return;
         }
-        loading.setVisibility(View.VISIBLE);
         FirebaseAuth.getInstance().signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -216,20 +248,35 @@ public class MainActivity extends Activity {
                 }
             }
         });
-        loading.setVisibility(View.GONE);
 
     }
 
+    /**
+     * if back is pressed, the app closes
+     */
     @Override
     public void onBackPressed() {
+        if(saveLoginBox.isChecked()){
+            loginEditor.putBoolean("loginState",true);
+            loginEditor.putString("username",emailET.getText().toString().trim());
+            loginEditor.putString("password",passwordET.getText().toString().trim());
+            //user login
+            keepLogInEditor.putBoolean("keepLogInState",true);
+
+        }
+        else{
+            loginEditor.clear();
+            keepLogInEditor.putBoolean("keepLogInState",false);
+        }
+        loginEditor.commit();
+        keepLogInEditor.commit();
         finish();
-        //overridePendingTransition(0, R.anim.slide_down);
     }
 
+    /**
+     * login the user in the firebase authentication panel. And get the user unique id
+     */
     public void login(){
-        //loading.setVisibility(View.VISIBLE);
-
-        //user = FirebaseAuth.getInstance().getCurrentUser();
         reference = FirebaseDatabase.getInstance().getReference("Users");
         userID = user.getUid();
 
@@ -246,12 +293,13 @@ public class MainActivity extends Activity {
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                //Toast.makeText(MainActivity.this, "Failed to get user data5!", Toast.LENGTH_LONG).show();
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
     }
 
+    /**
+     * Check if it is the first login of the user. if it is, he will be redirect for the settings activity.if it isn´t: if the user has match pending, will be redirected for the match activity; if the user doesn't have match pending, will be redirected for the home activity
+     */
     public void checkFirstLogIn()
     {
         if(userProfile.firstLogIn)

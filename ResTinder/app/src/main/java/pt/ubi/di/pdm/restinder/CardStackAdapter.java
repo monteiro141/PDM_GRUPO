@@ -21,6 +21,7 @@ public class CardStackAdapter extends RecyclerView.Adapter<CardStackAdapter.View
         this.items = items;
     }
 
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -47,7 +48,7 @@ public class CardStackAdapter extends RecyclerView.Adapter<CardStackAdapter.View
             image = itemView.findViewById(R.id.item_image);
             name = itemView.findViewById(R.id.item_name);
         }
-
+        //Set the image and the name of the card
         public void setData(ItemModel data) {
             String url="https://maps.googleapis.com/maps/api/place/photo" +
                     "?maxwidth=800" +

@@ -134,13 +134,10 @@ public class Match extends Activity
                 userProfile = dataSnapshot.getValue(User.class);
                 if(userProfile != null){
                     if(!(userProfile.matchPending)){
-                        System.out.println("GOTOHOME");
                         if(!isPaused){
-                            System.out.println("GOTOHOME1");
                             clearNotificationPref();
                             goToHome();
                         }else{
-                            System.out.println("GOTOHOME2");
                             changeToHome = true;
                         }
 
@@ -148,16 +145,14 @@ public class Match extends Activity
                 }
             }
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                //Toast.makeText(Match.this, "Failed to get user data!", Toast.LENGTH_SHORT).show();
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
 
+        //Portion of the code responsible to show the match result
         matchReference = FirebaseDatabase.getInstance().getReference("Match");
         matchReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                //System.out.println(snapshot.child("partnerTwo").getValue().toString());
                 Match SS = new Match();
                 if(snapshot.getValue() != null && (snapshot.child("partnerOne").getValue().toString().equals(userID) || snapshot.child("partnerTwo").getValue().toString().equals(userID))) {
                     SS.lat = snapshot.child("lat").getValue().toString();
@@ -181,10 +176,6 @@ public class Match extends Activity
 
                     if (SS.partnerOne != null && SS.partnerTwo != null) {
                         if (SS.partnerOne.equals(userID) || SS.partnerTwo.equals(userID)) {
-                            System.out.println("matched on class");
-
-                            System.out.println("Lat: " + Double.parseDouble(SS.lat) + "; SEM: " + SS.lat);
-                            System.out.println("Lng: " + Double.parseDouble(SS.lng) + "; SEM: " + SS.lng);
                             locR.setText(SS.address);
                             nameR.setText(SS.name);
                             if (SS.partnerOne.equals(userID)) {
@@ -264,6 +255,9 @@ public class Match extends Activity
 
     }
 
+    /**
+     * Create a notification channel that is require for API 26 and above
+     */
     private void createNotificationChannel() {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             NotificationChannel serviceChannel = new NotificationChannel(
@@ -304,7 +298,9 @@ public class Match extends Activity
         this.address = address;
     }
 
-
+    /**
+     * Clear the notification's shared preferences.
+     */
     public void clearNotificationPref(){
         boolean firstNotification = boundedServ.getBoolean("firstNotification",false);
         if(firstNotification){
@@ -425,49 +421,36 @@ public class Match extends Activity
         alertDialog.show();
     }
 
+    /**
+     * if click settings icon the user go to the settings activity
+     * @param v
+     */
     public void onSettings(View v){
         startActivity(new Intent(this, Settings.class));
         overridePendingTransition(0,0);
     }
 
+    /**
+     * if click homes icon a message appear. In match the user can't be redirected for the home activity
+     * @param v
+     */
     public void onHome(View v){
         Toast.makeText(Match.this, "You have a pending match!", Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * The user is redirected to the home activity
+     */
     public void goToHome(){
         super.finish();
         startActivity(new Intent(this,Home.class));
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
+    //SERVICES
     /**
-     * SERVICES
+     * Used to start or stop a service if the app stop
      */
-
-    /*@Override
-    protected void onPause() {
-        Log.d("SUPERMETHODS","onPauseCalled");
-        isPaused = true;
-        mBound = boundedServ.getBoolean("isBounded",false);
-        if((loggedOut || !userProfile.matchPending)&& mBound){
-            boundedServEditor.putBoolean("isBounded",false);
-            boundedServEditor.commit();
-            serviceIntent = new Intent(getApplicationContext(),RestinderService.class);
-            stopService(serviceIntent);
-            System.out.println("I'm unbinded.");
-            mBound = false;
-        }else if (!loggedOut && userProfile.matchPending && !mBound ){
-            serviceIntent = new Intent(getApplicationContext(),RestinderService.class);
-            serviceIntent.putExtra("userid",userID);
-            startService(serviceIntent);
-            boundedServEditor.putBoolean("isBounded",true);
-            boundedServEditor.commit();
-            mBound = true;
-            System.out.println("I'm binded.");
-        }
-        super.onPause();
-    }*/
-
     @Override
     protected void onStop() {
         super.onStop();
@@ -494,31 +477,10 @@ public class Match extends Activity
 
     }
 
-    /*@Override
-    protected void onDestroy() {
-        Log.d("SUPERMETHODS","onDestroyCalled");
-        isPaused = true;
-        if((loggedOut || !userProfile.matchPending)&& mBound){
-            Log.d("SUPERMETHODS","I'm unbinded destroyCalled");
-            boundedServEditor.putBoolean("isBounded",false);
-            boundedServEditor.commit();
-            serviceIntent = new Intent(getApplicationContext(),RestinderService.class);
-            stopService(serviceIntent);
 
-            mBound = false;
-        }else if (!loggedOut && userProfile.matchPending && !mBound ){
-            Log.d("SUPERMETHODS","I'm binded destroyCalled");
-            serviceIntent = new Intent(getApplicationContext(),RestinderService.class);
-            serviceIntent.putExtra("userid",userID);
-            startService(serviceIntent);
-            boundedServEditor.putBoolean("isBounded",true);
-            boundedServEditor.commit();
-            mBound = true;
-        }
-        Log.d("SUPERMETHODS","onDestroyCalledEnd");
-        super.onDestroy();
-    }*/
-
+    /**
+     * Used to start or stop a service if the app restart's
+     */
     @Override
     protected void onRestart() {
         super.onRestart();

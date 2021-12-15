@@ -6,6 +6,12 @@ public class ItemModel {
     {
 
     }
+
+    /**
+     * Constructor for the item model to be used on the swipe card
+     * @param name
+     * @param imageurl
+     */
     public ItemModel(String name,String imageurl)
     {
         this.name = name;
