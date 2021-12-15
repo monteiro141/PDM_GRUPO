@@ -250,19 +250,25 @@ public class Home extends Activity implements LocationListener{
             //Get the current location of the user. First we need to verify if the permission is granted.
             if(ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
                     ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-                LocationManager locationManager= (LocationManager)getSystemService(LOCATION_SERVICE);
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,this);
-                Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                if(location == null){
-                    LocationManager locationManager2= (LocationManager)getSystemService(LOCATION_SERVICE);
-                    locationManager2.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0,0,this);
-                    Location location2=locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                    currentLat=location2.getLatitude();
-                    currentLong=location2.getLongitude();
-                }else{
-                    currentLat=location.getLatitude();
-                    currentLong=location.getLongitude();
+                try{
+                    LocationManager locationManager= (LocationManager)getSystemService(LOCATION_SERVICE);
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,this);
+                    Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    if(location == null){
+                        LocationManager locationManager2= (LocationManager)getSystemService(LOCATION_SERVICE);
+                        locationManager2.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0,0,this);
+                        Location location2=locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                        currentLat=location2.getLatitude();
+                        currentLong=location2.getLongitude();
+                    }else{
+                        currentLat=location.getLatitude();
+                        currentLong=location.getLongitude();
+                    }
+                }catch (Exception e){
+                    finish();
+                    Toast.makeText(Home.this,"Error getting your location",Toast.LENGTH_SHORT).show();
                 }
+
 
             }
 
