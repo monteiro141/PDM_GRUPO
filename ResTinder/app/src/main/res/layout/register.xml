@@ -146,7 +146,7 @@
                 android:id="@+id/birthDateRegister"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:hint="Write your birth year here"
+                android:hint="Write your age here"
                 android:inputType="date"
                 android:textAlignment="center" />
 
