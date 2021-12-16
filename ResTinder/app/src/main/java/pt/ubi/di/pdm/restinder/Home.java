@@ -479,7 +479,7 @@ public class Home extends Activity implements LocationListener{
      * @param v
      */
     public void onLogout(View v){
-        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        AlertDialog alertDialog = new AlertDialog.Builder(this, R.style.DialogTheme).create();
         alertDialog.setTitle("Log Out");
         alertDialog.setMessage("Do you wish to log out from your account?");
 

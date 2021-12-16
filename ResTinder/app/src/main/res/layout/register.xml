@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/login"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".Register">
 
     <ScrollView
         android:layout_width="fill_parent"
@@ -30,6 +30,7 @@
                 android:layout_gravity="center"
                 android:fontFamily="sans-serif-black"
                 android:text="Email"
+                android:textColor="@color/black"
                 android:textAlignment="center" />
 
             <Space
@@ -42,6 +43,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:hint="Write your email here"
+                android:textColor="@color/black"
                 android:textAlignment="center" />
 
             <Space
@@ -56,6 +58,7 @@
                 android:layout_gravity="center"
                 android:fontFamily="sans-serif-black"
                 android:text="Password"
+                android:textColor="@color/black"
                 android:textAlignment="center" />
 
             <Space
@@ -69,6 +72,7 @@
                 android:layout_height="wrap_content"
                 android:hint="Write your password here"
                 android:inputType="textPassword"
+                android:textColor="@color/black"
                 android:textAlignment="center" />
 
             <Space
@@ -83,6 +87,7 @@
                 android:layout_gravity="center"
                 android:fontFamily="sans-serif-black"
                 android:text="First Name"
+                android:textColor="@color/black"
                 android:textAlignment="center" />
 
             <Space
@@ -95,6 +100,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:hint="Write your first name here"
+                android:textColor="@color/black"
                 android:textAlignment="center" />
 
             <Space
@@ -109,6 +115,7 @@
                 android:layout_gravity="center"
                 android:fontFamily="sans-serif-black"
                 android:text="Last Name"
+                android:textColor="@color/black"
                 android:textAlignment="center" />
 
             <Space
@@ -121,6 +128,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:hint="Write your last name here"
+                android:textColor="@color/black"
                 android:textAlignment="center" />
 
             <Space
@@ -135,6 +143,7 @@
                 android:layout_gravity="center"
                 android:fontFamily="sans-serif-black"
                 android:text="Age"
+                android:textColor="@color/black"
                 android:textAlignment="center" />
 
             <Space
@@ -148,6 +157,7 @@
                 android:layout_height="wrap_content"
                 android:hint="Write your age here"
                 android:inputType="date"
+                android:textColor="@color/black"
                 android:textAlignment="center" />
 
             <Space
@@ -162,6 +172,7 @@
                 android:layout_gravity="center"
                 android:fontFamily="sans-serif-black"
                 android:text="Civil State"
+                android:textColor="@color/black"
                 android:textAlignment="center" />
 
             <Space
@@ -175,6 +186,7 @@
                 android:layout_height="wrap_content"
                 android:focusable="false"
                 android:text="Single"
+                android:textColor="@color/black"
                 android:textAlignment="center" />
 
             <Space
@@ -189,6 +201,7 @@
                 android:layout_gravity="center"
                 android:fontFamily="sans-serif-black"
                 android:text="Gender"
+                android:textColor="@color/black"
                 android:textAlignment="center" />
 
             <Space
@@ -215,6 +228,7 @@
                 android:layout_gravity="center"
                 android:fontFamily="sans-serif-black"
                 android:text="Cellphone"
+                android:textColor="@color/black"
                 android:textAlignment="center" />
 
             <Space
@@ -227,6 +241,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:hint="Write your phone number here"
+                android:textColor="@color/black"
                 android:inputType="phone"
                 android:textAlignment="center" />
 
@@ -242,6 +257,7 @@
                 android:layout_gravity="center"
                 android:fontFamily="sans-serif-black"
                 android:text="Preferences"
+                android:textColor="@color/black"
                 android:textAlignment="center" />
 
             <Space
@@ -254,7 +270,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:entries="@array/genders"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:textColor="@color/black"/>
 
             <Space
                 android:layout_width="wrap_content"
@@ -267,7 +284,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:onClick="registerUser"
-                android:text="Register" />
+                android:text="Register"
+                android:textColor="@color/black"
+                android:backgroundTint="@color/light_grey"/>
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>
