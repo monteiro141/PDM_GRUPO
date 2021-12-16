@@ -112,7 +112,6 @@ public class MainActivity extends Activity {
         if(!manager2.isProviderEnabled(LocationManager.GPS_PROVIDER)){
             Toast.makeText(MainActivity.this,"You need to activate the location!",Toast.LENGTH_LONG).show();
             finish();
-
         }
     }
     /**

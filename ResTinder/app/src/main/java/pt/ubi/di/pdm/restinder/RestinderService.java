@@ -161,7 +161,6 @@ public class RestinderService extends Service {
             }
         });
 
-        //stopSelf();
         return START_NOT_STICKY;
     }
 
