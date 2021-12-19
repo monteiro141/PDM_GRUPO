@@ -8,11 +8,16 @@
     android:orientation="vertical"
     android:background="@drawable/back"
     tools:context=".Settings">
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="9.17"
+        android:layout_weight="9.17">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent">
 
@@ -22,7 +27,6 @@
             android:layout_height="75dp"
             android:gravity="center"
             android:text="Settings"
-            android:layout_weight="1"
             android:fontFamily="sans-serif-black"
             android:textColor="#051745"
             android:textSize="20sp"
@@ -32,18 +36,17 @@
         <TextView
             android:id="@+id/titlenome"
             android:layout_width="wrap_content"
-            android:layout_height="70dp"
+            android:layout_height="30dp"
             android:fontFamily="sans-serif-black"
             android:text="First Name"
             android:layout_marginLeft="20dp"
-            android:layout_weight="1"
             android:textColor="@color/black"
             android:textSize="20sp" />
 
         <EditText
             android:id="@+id/textnome"
             android:layout_width="120dp"
-            android:layout_height="70dp"
+            android:layout_height="50dp"
             android:layout_marginLeft="20dp"
             android:layout_weight="1"
             android:focusable="false"
@@ -52,10 +55,9 @@
         <TextView
             android:id="@+id/titleapelido"
             android:layout_width="wrap_content"
-            android:layout_height="70dp"
+            android:layout_height="30dp"
             android:fontFamily="sans-serif-black"
             android:text="Last Name"
-            android:layout_weight="1"
             android:layout_marginLeft="20dp"
             android:textColor="@color/black"
             android:textSize="20sp"/>
@@ -63,8 +65,7 @@
         <EditText
             android:id="@+id/textapelido"
             android:layout_width="120dp"
-            android:layout_height="70dp"
-            android:layout_weight="1"
+            android:layout_height="50dp"
             android:layout_marginLeft="20dp"
             android:focusable="false"
             android:inputType="textPersonName" />
@@ -72,7 +73,7 @@
         <TextView
             android:id="@+id/titlemailparceiro"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="30dp"
             android:layout_weight="1"
             android:fontFamily="sans-serif-black"
             android:text="Partner Mail"
@@ -83,16 +84,14 @@
         <EditText
             android:id="@+id/textmailparceiro"
             android:layout_width="250dp"
-            android:layout_height="70dp"
-            android:layout_weight="1"
+            android:layout_height="50dp"
             android:layout_marginLeft="20dp"
             android:inputType="textPersonName" />
 
         <TextView
             android:id="@+id/titletelemovel"
             android:layout_width="wrap_content"
-            android:layout_height="70dp"
-            android:layout_weight="1"
+            android:layout_height="30dp"
             android:fontFamily="sans-serif-black"
             android:text="Phone Number"
             android:layout_marginLeft="20dp"
@@ -103,8 +102,7 @@
         <EditText
             android:id="@+id/texttelemovel"
             android:layout_width="230dp"
-            android:layout_height="70dp"
-            android:layout_weight="1"
+            android:layout_height="50dp"
             android:layout_marginLeft="20dp"
             android:digits="+() 1234567890-"
             android:inputType="phone|number"/>
@@ -112,8 +110,7 @@
         <TextView
             android:id="@+id/titleradius"
             android:layout_width="wrap_content"
-            android:layout_height="70dp"
-            android:layout_weight="1"
+            android:layout_height="30dp"
             android:fontFamily="sans-serif-black"
             android:text="Range (km)"
             android:layout_marginLeft="20dp"
@@ -123,16 +120,14 @@
         <EditText
             android:id="@+id/textradius"
             android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_weight="1"
+            android:layout_height="50dp"
             android:layout_marginLeft="20dp"
             android:inputType="number" />
 
         <TextView
             android:id="@+id/birthday"
             android:layout_width="wrap_content"
-            android:layout_height="70dp"
-            android:layout_weight="1"
+            android:layout_height="30dp"
             android:fontFamily="sans-serif-black"
             android:layout_marginLeft="20dp"
             android:text="Age"
@@ -142,9 +137,8 @@
         <EditText
             android:id="@+id/pickDate"
             android:layout_width="70dp"
-            android:layout_height="70dp"
+            android:layout_height="50dp"
             android:layout_marginLeft="20dp"
-            android:layout_weight="1"
             android:fontFamily="sans-serif-black"
             android:inputType="number"
             android:textColor="@color/black" />
@@ -158,11 +152,11 @@
             android:backgroundTint="@color/light_grey"
             android:text="Confirm Changes"
             android:onClick="changeUser"
-            android:layout_weight="1"
             android:layout_marginTop="2dp"
             android:textColor="@color/black" />
     </LinearLayout>
-
+    </ScrollView>
+    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
